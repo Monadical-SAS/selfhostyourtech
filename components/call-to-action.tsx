@@ -164,7 +164,7 @@ export default function CallToAction() {
       <div className="container mx-auto px-4">
         <h2 className="text-4xl font-bold mb-12 text-center">Ready to Take Control?</h2>
         <div className="grid md:grid-cols-2 gap-8">
-          <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700">
+          <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700 max-w-full">
             <CardHeader>
               <CardTitle>Run this kit yourself</CardTitle>
               <CardDescription>Quick start with our Docker Compose setup</CardDescription>
