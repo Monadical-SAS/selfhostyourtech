@@ -1,0 +1,54 @@
+# Simple workflow for deploying static content to GitHub Pages
+name: Deploy docs to Github Pages
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["main"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # TODO
+      #- name: Setup Node.js environment
+      #  uses: actions/setup-node@v4.1.0
+      #  with:
+      #    node-version: 24.x
+      #    cache: true
+      #
+      #- name: Build static html using next.js
+      #  run: |
+      #      npm ci && next build
+
+      - name: Upload static html as artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload next.js static html build output dir
+          path: './docs/out'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
