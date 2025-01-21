@@ -1,21 +1,11 @@
 services:
   postgresql:
-    image: docker.io/library/postgres:16-alpine
-    restart: unless-stopped
-    deploy:
-      placement:
-        constraints:
-          - node.role == manager
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
-      start_period: 20s
-      interval: 30s
-      retries: 5
-      timeout: 5s
+    image: postgres:16-alpine
+    restart: always
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./data/postgresql:/var/lib/postgresql/data
     env_file:
-     - /opt/authentik/authentik.env
+     - .env
     environment:
       POSTGRES_PASSWORD: ${PG_PASS}
       POSTGRES_USER: ${PG_USER}
@@ -23,36 +13,22 @@ services:
     networks:
       - authentik-internal
   redis:
-    image: docker.io/library/redis:alpine
+    image: redis:alpine
     command: --save 60 1 --loglevel warning
-    restart: unless-stopped
-    deploy:
-      placement:
-        constraints:
-          - node.role == manager
-    healthcheck:
-      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
-      start_period: 20s
-      interval: 30s
-      retries: 5
-      timeout: 3s
+    restart: always
     volumes:
       - redis_data:/data
     networks:
       - authentik-internal
   authentik-proxy:
     image: ghcr.io/goauthentik/server:${AUTHENTIK_VERSION}
-    restart: unless-stopped
-    deploy:
-      placement:
-        constraints:
-          - node.role == manager
+    restart: always
     ports:
       - "9000"
       - "9443"
     command: server
     env_file:
-     - /opt/authentik/authentik.env
+     - .env
     environment:
       AUTHENTIK_REDIS__HOST: redis
       AUTHENTIK_POSTGRESQL__HOST: postgresql
@@ -68,8 +44,8 @@ services:
       AUTHENTIK_EMAIL__FROM: ${EMAIL_FROM}
       AUTHENTIK_EMAIL__TIMEOUT: "10"
     volumes:
-      - media_data:/media
-      - custom_templates:/templates
+      - ./data/media:/media
+      - ./data/templates:/templates
     depends_on:
       - postgresql
       - redis
@@ -99,13 +75,9 @@ services:
       - traefik.http.middlewares.authentik.forwardauth.authResponseHeaders=X-authentik-username,X-authentik-groups,X-authentik-email,X-authentik-name,X-authentik-uid,X-authentik-jwt,X-authentik-meta-jwks,X-authentik-meta-outpost,X-authentik-meta-provider,X-authentik-meta-app,X-authentik-meta-version
   worker:
     env_file:
-     - /opt/authentik/authentik.env
+     - .env
     image: ghcr.io/goauthentik/server:${AUTHENTIK_VERSION}
-    restart: unless-stopped
-    deploy:
-      placement:
-        constraints:
-          - node.role == manager
+    restart: always
     command: worker
     user: root
     environment:
@@ -116,22 +88,15 @@ services:
       AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
       AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
     volumes:
-      - certs_data:/certs
-      - media_data:/media
-      - custom_templates:/templates
+      - ./etc/certs:/certs
+      - ./data/media:/media
+      - ./data/templates:/templates
     depends_on:
       - postgresql
       - redis      
     networks:
       - traefik-public
       - authentik-internal
-
-volumes:
-  postgres_data:
-  redis_data:
-  media_data:
-  certs_data:
-  custom_templates:
 
 networks:
   traefik-public:
