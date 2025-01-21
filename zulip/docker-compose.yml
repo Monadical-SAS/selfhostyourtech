@@ -1,0 +1,141 @@
+# https://github.com/zulip/docker-zulip/blob/main/docker-compose.yml
+# https://github.com/zulip/docker-zulip#running-a-zulip-server-with-docker-compose
+
+services:
+  postgres:
+    # https://github.com/zulip/zulip/blob/main/Dockerfile-postgresql
+    # https://hub.docker.com/r/zulip/zulip-postgresql/tags
+    image: 'zulip/zulip-postgresql:14'
+    expose:
+      - 5432
+    environment:
+      POSTGRES_DB: zulip
+      POSTGRES_USER: zulip
+      POSTGRES_PASSWORD: zulip
+    volumes:
+      - './data/postgres:/var/lib/postgresql/data'
+    shm_size: 256m
+    cpus: 4
+    mem_limit: 3072m
+    restart: on-failure
+
+  redis:
+    # https://hub.docker.com/_/redis/tags
+    image: 'redis:alpine'
+    command: /bin/sh -c 'redis-server --appendonly yes --requirepass zulip'
+    expose:
+      - 6379
+    volumes:
+      - ./data/redis:/data
+    cpus: 2
+    mem_limit: 1024m
+    restart: on-failure
+
+  memcached:
+    # https://hub.docker.com/_/memcached/tags
+    image: 'memcached:alpine'
+    command:
+      - 'sh'
+      - '-euc'
+      - |
+        echo 'mech_list: plain' > "$$SASL_CONF_PATH"
+        echo "zulip@$$HOSTNAME:$$MEMCACHED_PASSWORD" > "$$MEMCACHED_SASL_PWDB"
+        echo "zulip@localhost:$$MEMCACHED_PASSWORD" >> "$$MEMCACHED_SASL_PWDB"
+        exec memcached -S
+    environment:
+      SASL_CONF_PATH: '/home/memcache/memcached.conf'
+      MEMCACHED_SASL_PWDB: '/home/memcache/memcached-sasl-db'
+      MEMCACHED_PASSWORD: 'zulip'
+    expose:
+      - 11211
+    cpus: 2
+    mem_limit: 1024m
+    restart: on-failure
+
+
+  rabbitmq:
+    # https://hub.docker.com/_/rabbitmq/tags
+    image: 'rabbitmq:3-alpine'
+    expose:
+      - 5672
+    environment:
+      RABBITMQ_DEFAULT_USER: zulip
+      RABBITMQ_DEFAULT_PASS: zulip
+    volumes:
+      - ./data/rabbitmq:/var/lib/rabbitmq
+    cpus: 4
+    mem_limit: 2048m
+    restart: on-failure
+
+  zulip:
+    # https://github.com/zulip/docker-zulip#configuration
+    # https://hub.docker.com/r/zulip/docker-zulip/tags
+    image: 'zulip/docker-zulip:9.3-0'
+    environment:
+      # Zulip settings
+      SETTING_EXTERNAL_HOST: "zulip.selfhostyour.tech"
+      DISABLE_HTTPS: 'True'
+      SETTING_ALLOWED_HOSTS: "['127.0.0.1', 'zulip.selfhostyour.tech']"
+      ZULIP_CUSTOM_SETTINGS: |
+          CAMO_URI = ''
+      SETTING_ZULIP_ADMINISTRATOR: "zulip@selfhostyour.tech"
+      SETTING_PASSWORD_MIN_ZXCVBN_QUALITY: "0.3"
+      ZULIP_AUTH_BACKENDS: 'EmailAuthBackend'
+      ZULIP_USER_CREATION_ENABLED: 'True'
+      SETTING_GIPHY_API_KEY: "<insert key here>"
+      SETTING_VIDEO_ZOOM_CLIENT_ID: "<insert key here>"
+      SETTING_WEB_PUBLIC_STREAMS_ENABLED: 'True'
+      # Connections:
+      DB_HOST: 'postgres'
+      DB_HOST_PORT: '5432'
+      DB_USER: 'zulip'
+      SETTING_MEMCACHED_LOCATION: 'memcached:11211'
+      SETTING_RABBITMQ_HOST: 'rabbitmq'
+      SETTING_REDIS_HOST: 'redis'
+      LOADBALANCER_IPS: '192.168.0.0/16,172.0.0.0/8'
+      # Email config:
+      SETTING_EMAIL_HOST: 'mail.selfhostyour.tech'
+      SETTING_EMAIL_HOST_USER: 'admin@selfhostyour.tech'
+      SETTING_EMAIL_PORT: '587'
+      SETTING_EMAIL_USE_SSL: 'False'
+      SETTING_EMAIL_USE_TLS: 'True'
+      SETTING_NOREPLY_EMAIL_ADDRESS: 'zulip@selfhostyour.tech'
+      SETTING_ADD_TOKENS_TO_NOREPLY_ADDRESS: 'False'
+      SETTING_PUSH_NOTIFICATION_BOUNCER_URL: 'https://push.zulipchat.com'
+      # Secrets:
+      SECRETS_secret_key: '<insert key here>'
+      SECRETS_email_password: "<insert SMTP pass here>"
+      SECRETS_rabbitmq_password: 'zulip'
+      SECRETS_postgres_password: 'zulip'
+      SECRETS_memcached_password: 'zulip'
+      SECRETS_redis_password: 'zulip'
+      SECRETS_video_zoom_client_secret: "<insert key here>"
+    volumes:
+      - ./data/zulip:/data
+      - ./etc/zulip/zulip.conf:/etc/zulip/zulip.conf
+      - ./data/logs/zulip:/var/log/zulip
+    depends_on:
+      - postgres
+      - redis
+      - memcached
+      - rabbitmq
+    ulimits:
+      nofile:
+        soft: 1000000
+        hard: 1048576
+    healthcheck:
+      test: ["CMD", "curl", "--silent", "http://127.0.0.1:80/login/"]
+    cpus: 4
+    mem_limit: 4096m
+    restart: on-failure
+
+  argo:
+    # https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/tunnel-guide/local/local-management/arguments/
+    # https://hub.docker.com/r/cloudflare/cloudflared/tags
+    image: cloudflare/cloudflared
+    command: tunnel --no-autoupdate --retries 15 --protocol http2 --overwrite-dns --hostname zulip.selfhostyour.tech --url http://zulip:80 --name zulip.selfhostyour.tech
+    volumes:
+      - ./etc/cloudflared:/etc/cloudflared
+    cpus: 4
+    mem_limit: 2048m
+    restart: on-failure
