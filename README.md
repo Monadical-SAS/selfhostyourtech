@@ -51,6 +51,7 @@ Aimed at companies with 1 ~ 100 employees.
 - hedgedoc ⭐️
 - wordpress
 - matomo
+- [Ghost](https://github.com/TryGhost/Ghost)
 
 ### Office
 
@@ -59,6 +60,12 @@ Aimed at companies with 1 ~ 100 employees.
 - ONLYOFFICE ⭐️
 - collabora
 - penpot
+
+### CRM
+
+- baserow ⭐️
+- [espoCRM](https://github.com/espocrm/espocrm)
+- monica
 - twenty
 
 ### Security
@@ -80,6 +87,7 @@ Aimed at companies with 1 ~ 100 employees.
 - n8n ⭐️
 - gitea
 - healthchecks.io ⭐️
+- netdata
 
 ### AI
 
