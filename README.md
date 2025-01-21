@@ -4,11 +4,10 @@ An all-in-one Docker kit to self-host your business's tech stack.
 
 Aimed at companies with 1 ~ 100 employees.
 
-- Public Site: https://selfhostyour.tech
+- Main Site: https://selfhostyour.tech
 - Source Code: https://github.com/Monadical-SAS/selfhostyourtech
 - Community: https://zulip.selfhostyour.tech
 - Documentation: https://docs.selfhostyour.tech
-- Demo Server: https://demo.selfhostyour.tech
 
 ---
 
@@ -29,51 +28,61 @@ Aimed at companies with 1 ~ 100 employees.
    bash ./*/bin/link_to_*.sh
    ```
 
+
+<br/>
+
+---
+---
+
+<br/>
+
 ## Services
 
 ### Communication
 
-- zulip
-- simplelogin
-- stalwart
+#### zulip ⭐️
+
+#### simplelogin
+
+#### stalwart
 
 ### Publishing
 
-- hedgedoc
+- hedgedoc ⭐️
 - wordpress
 - matomo
 
 ### Office
 
-- hedgedoc
-- nextcloud
-- ONLYOFFICE
+- hedgedoc ⭐️
+- nextcloud ⭐️
+- ONLYOFFICE ⭐️
 - collabora
 - penpot
 - twenty
 
 ### Security
 
-- authentik
-- tailscale
+- authentik ⭐️
+- tailscale ⭐️
 
 ### Data Warehousing
 
-- archivebox
-- baserow
-- databox
-- duplicati
+- archivebox ⭐️
+- baserow ⭐️
+- databox ⭐️
+- duplicati ⭐️
 
 ### DevOps
 
-- portainer
-- traefik
-- n8n
+- portainer ⭐️
+- traefik ⭐️
+- n8n ⭐️
 - gitea
-- healthchecks.io
+- healthchecks.io ⭐️
 
 ### AI
 
-- librechat
-- helix
-- reflector
+- librechat ⭐️
+- helix ⭐️
+- reflector ⭐️
