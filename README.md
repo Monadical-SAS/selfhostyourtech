@@ -22,6 +22,11 @@ Aimed at companies with 1 ~ 100 employees.
      docker compose up -d
      cd ..
    done
+
+   # wait 1~2 min for everything to finish launching
+
+   # then run all the scripts to link the services together
+   bash ./*/bin/link_to_*.sh
    ```
 
 ## Services
