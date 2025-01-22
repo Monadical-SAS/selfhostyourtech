@@ -57,17 +57,23 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik-public
-      - traefik.constraint-label=traefik-public
-      # HTTP router (redirects to HTTPS)
-      - traefik.http.routers.authentik.rule=Host(`authentik.monadical.io`) || HostRegexp(`{subdomain:[A-Za-z0-9](?:[A-Za-z0-9\-]{0,61}[A-Za-z0-9])?}.monadical.io`) && PathPrefix(`/outpost.goauthentik.io/`)
-      - traefik.http.routers.authentik.entrypoints=http
-      - traefik.http.routers.authentik.middlewares=redirect-to-https
+      # Define the service explicitly
       - traefik.http.services.authentik.loadbalancer.server.port=9000
+      # HTTP router
+      - traefik.http.routers.authentik.rule=Host(`authentik.selfhostyour.tech`)
+      - traefik.http.routers.authentik.entrypoints=web
+      - traefik.http.routers.authentik.middlewares=redirect-to-https
       # HTTPS router
-      - traefik.http.routers.authentik-https.rule=Host(`authentik.monadical.io`) || HostRegexp(`{subdomain:[A-Za-z0-9](?:[A-Za-z0-9\-]{0,61}[A-Za-z0-9])?}.monadical.io`) && PathPrefix(`/outpost.goauthentik.io/`)
-      - traefik.http.routers.authentik-https.entrypoints=https
-      - traefik.http.routers.authentik-https.tls=true
-      - traefik.http.routers.authentik-https.tls.certresolver=le
+      - traefik.http.routers.authentik-secure.rule=Host(`authentik.selfhostyour.tech`)
+      - traefik.http.routers.authentik-secure.entrypoints=websecure
+      - traefik.http.routers.authentik-secure.tls=true
+      - traefik.http.routers.authentik-secure.tls.certresolver=letsencrypt
+      - traefik.http.routers.authentik-secure.service=authentik
+      # Outpost endpoints
+      - traefik.http.routers.authentik-outpost.rule=HostRegexp(`{subdomain:[a-zA-Z0-9-]+}.selfhostyour.tech`) && PathPrefix(`/outpost.goauthentik.io/`)
+      - traefik.http.routers.authentik-outpost.entrypoints=websecure
+      - traefik.http.routers.authentik-outpost.tls=true
+      - traefik.http.routers.authentik-outpost.tls.certresolver=letsencrypt
       # HTTPS redirect middleware
       - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
       - traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true
@@ -86,7 +92,7 @@ services:
       AUTHENTIK_REDIS__HOST: redis
       AUTHENTIK_POSTGRESQL__HOST: postgresql
       AUTHENTIK_POSTGRESQL__USER: ${PG_USER}
-      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB}q
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB}
       AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
       AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
     volumes:
