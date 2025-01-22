@@ -37,6 +37,7 @@ next-env.d.ts
 
 # Data
 */data/*
+!*/data/README.md
 
 # Env files
 */.env
