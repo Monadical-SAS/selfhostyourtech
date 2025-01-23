@@ -22,7 +22,7 @@ services:
       - MYSQL_HOST=nextcloud_db
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
-      - MYSQL_PASSWORD=your_password_here
+      - MYSQL_PASSWORD=your&apos;s_password_here
     depends_on:
       - nextcloud_db
 
@@ -32,7 +32,7 @@ services:
       - nextcloud_db:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=your_root_password_here
-      - MYSQL_PASSWORD=your_password_here
+      - MYSQL_PASSWORD=your&apos;s_password_here
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
 
@@ -60,7 +60,7 @@ services:
       - SUITECRM_DATABASE_PORT_NUMBER=3306
       - SUITECRM_DATABASE_NAME=suitecrm
       - SUITECRM_DATABASE_USER=suitecrm
-      - SUITECRM_DATABASE_PASSWORD=your_password_here
+      - SUITECRM_DATABASE_PASSWORD=your&apos;s_password_here
     volumes:
       - suitecrm_data:/bitnami/suitecrm
     depends_on:
@@ -72,7 +72,7 @@ services:
       - MYSQL_ROOT_PASSWORD=your_root_password_here
       - MYSQL_DATABASE=suitecrm
       - MYSQL_USER=suitecrm
-      - MYSQL_PASSWORD=your_password_here
+      - MYSQL_PASSWORD=your&apos;s_password_here
     volumes:
       - suitecrm_db:/var/lib/mysql
 
@@ -83,7 +83,7 @@ services:
       - "8082:3000"
     environment:
       - REDMINE_DB_MYSQL=redmine_db
-      - REDMINE_DB_PASSWORD=your_password_here
+      - REDMINE_DB_PASSWORD=your&apos;s_password_here
     volumes:
       - redmine_data:/usr/src/redmine/files
     depends_on:
@@ -127,7 +127,7 @@ services:
     environment:
       - WORDPRESS_DB_HOST=wordpress_db
       - WORDPRESS_DB_USER=wordpress
-      - WORDPRESS_DB_PASSWORD=your_password_here
+      - WORDPRESS_DB_PASSWORD=your&apos;s_password_here
       - WORDPRESS_DB_NAME=wordpress
     volumes:
       - wordpress_data:/var/www/html
@@ -142,7 +142,7 @@ services:
       - MYSQL_ROOT_PASSWORD=your_root_password_here
       - MYSQL_DATABASE=wordpress
       - MYSQL_USER=wordpress
-      - MYSQL_PASSWORD=your_password_here
+      - MYSQL_PASSWORD=your&apos;s_password_here
 
 volumes:
   nextcloud_data:
