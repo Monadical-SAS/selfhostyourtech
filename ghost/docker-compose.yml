@@ -18,6 +18,19 @@ services:
       #NODE_ENV: development
     volumes:
       - ./data/ghost:/var/lib/ghost/content
+    networks:
+      - traefik-public  # Add this network
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - traefik.constraint-label=traefik-public
+      - traefik.http.routers.ghost.rule=Host(`${GHOST_DOMAIN}`)
+      - traefik.http.routers.ghost.entrypoints=websecure
+      - traefik.http.routers.ghost.tls.certresolver=letsencrypt
+      - traefik.http.routers.ghost.tls=true
+      - traefik.http.services.ghost.loadbalancer.server.port=80
+      - traefik.http.services.ghost.loadbalancer.passHostHeader=true
+      - traefik.http.services.ghost.loadbalancer.server.port=2368
 
   mysql:
     image: mysql:8.0
@@ -26,3 +39,7 @@ services:
       MYSQL_ROOT_PASSWORD: example
     volumes:
       - ./data/mysql:/var/lib/mysql
+
+networks:
+  traefik-public:
+    external: true
