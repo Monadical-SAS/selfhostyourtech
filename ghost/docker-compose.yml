@@ -1,10 +1,12 @@
-
 services:
   ghost:
     image: ghost:5-alpine
     restart: always
-    ports:
-      - 8080:2368
+    depends_on:
+      - mysql
+    networks:
+      - ghost-internal  # Add internal network for DB communication
+      - traefik-public  # Keep traefik network for external access
     environment:
       # see https://ghost.org/docs/config/#configuration-options
       database__client: mysql
@@ -13,33 +15,44 @@ services:
       database__connection__password: example
       database__connection__database: ghost
       # this url value is just an example, and is likely wrong for your environment!
-      url: http://localhost:8080
+      url: https://ghost.selfhostyour.tech  # Update to use HTTPS
       # contrary to the default mentioned in the linked documentation, this image defaults to NODE_ENV=production (so development mode needs to be explicitly specified if desired)
-      #NODE_ENV: development
+      NODE_ENV: production
+      privacy__useUpdateCheck: false
+      # This tells Ghost to trust the X-Forwarded-Proto header from Traefik
+      url_base: ${GHOST_BASE_URL:-https://ghost.selfhostyour.tech}
+      server__host: "0.0.0.0"
+      server__port: 2368
+      trust_proxy: true
     volumes:
       - ./data/ghost:/var/lib/ghost/content
-    networks:
-      - traefik-public  # Add this network
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik-public
-      - traefik.constraint-label=traefik-public
-      - traefik.http.routers.ghost.rule=Host(`${GHOST_DOMAIN}`)
-      - traefik.http.routers.ghost.entrypoints=websecure
-      - traefik.http.routers.ghost.tls.certresolver=letsencrypt
-      - traefik.http.routers.ghost.tls=true
-      - traefik.http.services.ghost.loadbalancer.server.port=80
-      - traefik.http.services.ghost.loadbalancer.passHostHeader=true
-      - traefik.http.services.ghost.loadbalancer.server.port=2368
+      - traefik.http.services.ghost-service.loadbalancer.server.port=2368
+      - traefik.http.routers.ghost.rule=Host(`ghost.selfhostyour.tech`)
+      - traefik.http.routers.ghost.entrypoints=web
+      - traefik.http.routers.ghost.middlewares=redirect-to-https
+      - traefik.http.routers.ghost-secure.rule=Host(`ghost.selfhostyour.tech`)
+      - traefik.http.routers.ghost-secure.entrypoints=websecure
+      - traefik.http.routers.ghost-secure.tls=true
+      - traefik.http.routers.ghost-secure.tls.certresolver=letsencrypt
+      - traefik.http.routers.ghost-secure.service=ghost-service
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true
 
   mysql:
     image: mysql:8.0
     restart: always
+    networks:
+      - ghost-internal  # Only internal network needed for DB
     environment:
       MYSQL_ROOT_PASSWORD: example
     volumes:
       - ./data/mysql:/var/lib/mysql
 
 networks:
+  ghost-internal:
+    internal: true  # This makes it only accessible within the stack
   traefik-public:
     external: true
