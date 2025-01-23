@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { Highlight, themes } from 'prism-react-renderer'
+
 interface CodeBlockProps {
   code: string
   language?: string
