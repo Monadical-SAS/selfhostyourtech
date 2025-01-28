@@ -52,7 +52,6 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     networks:
       - internal
-      - traefik-public
 
   redis:
     image: redis:6-alpine
@@ -62,7 +61,6 @@ services:
     command: redis-server --requirepass ${REDIS_PASSWORD}
     networks:
       - internal
-      - traefik-public
 
 volumes:
   document_data:
