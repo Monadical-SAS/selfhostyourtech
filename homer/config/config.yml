@@ -1,0 +1,125 @@
+---
+title: "SelfHosted Kit"
+subtitle: "Self-hosted business infrastructure"
+logo: "logo.png"
+header: true
+footer: '<p>Created with <span class="has-text-danger">❤️</span> by <a href="https://selfhostyour.tech">SelfHostYour.Tech</a></p>'
+
+theme: default
+
+colors:
+  light:
+    highlight-primary: "#7c3aed"
+    highlight-secondary: "#9333ea"
+    highlight-hover: "#6d28d9"
+    background: "#1f2937"
+    card-background: "#111827"
+    text: "#ffffff"
+    text-header: "#fafafa"
+    text-title: "#ffffff"
+    text-subtitle: "#f5f5f5"
+    card-shadow: rgba(0, 0, 0, 0.4)
+    link: "#7c3aed"
+    link-hover: "#6d28d9"
+
+services:
+  - name: "Communication"
+    icon: "fas fa-comments"
+    items:
+      - name: "Zulip"
+        logo: "assets/tools/zulip.png"
+        subtitle: "Team chat with threaded conversations"
+        url: "https://zulip.selfhostyour.tech"
+        target: "_blank"
+
+  - name: "Office"
+    icon: "fas fa-briefcase"
+    items:
+      - name: "Nextcloud"
+        logo: "assets/tools/nextcloud.png"
+        subtitle: "File sharing and collaboration"
+        url: "https://nextcloud.selfhostyour.tech"
+      - name: "ONLYOFFICE"
+        logo: "assets/tools/onlyoffice.png"
+        subtitle: "Online document editing"
+        url: "https://onlyoffice.selfhostyour.tech"
+      - name: "HedgeDoc"
+        logo: "assets/tools/hedgedoc.png"
+        subtitle: "Collaborative markdown editor"
+        url: "https://hedgedoc.selfhostyour.tech"
+
+  - name: "CRM & Data"
+    icon: "fas fa-database"
+    items:
+      - name: "Baserow"
+        logo: "assets/tools/baserow.png"
+        subtitle: "No-code database & CRM"
+        url: "https://baserow.selfhostyour.tech"
+      - name: "Twenty"
+        logo: "assets/tools/twenty.png"
+        subtitle: "Modern CRM platform"
+        url: "https://twenty.selfhostyour.tech"
+
+  - name: "Security"
+    icon: "fas fa-shield-alt"
+    items:
+      - name: "Authentik"
+        logo: "assets/tools/authentik.png"
+        subtitle: "Identity provider & SSO"
+        url: "https://authentik.selfhostyour.tech"
+      - name: "Traefik"
+        logo: "assets/tools/traefik.png"
+        subtitle: "Reverse proxy & SSL"
+        url: "https://traefik.selfhostyour.tech"
+
+  - name: "DevOps"
+    icon: "fas fa-code-branch"
+    items:
+      - name: "Portainer"
+        logo: "assets/tools/portainer.png"
+        subtitle: "Container management"
+        url: "https://portainer.selfhostyour.tech"
+      - name: "n8n"
+        logo: "assets/tools/n8n.png"
+        subtitle: "Workflow automation"
+        url: "https://n8n.selfhostyour.tech"
+      - name: "Gitea"
+        logo: "assets/tools/gitea.png"
+        subtitle: "Git server"
+        url: "https://gitea.selfhostyour.tech"
+
+  - name: "Publishing"
+    icon: "fas fa-globe"
+    items:
+      - name: "Ghost"
+        logo: "assets/tools/ghost.png"
+        subtitle: "Professional publishing platform"
+        url: "https://ghost.selfhostyour.tech"
+      - name: "WordPress"
+        logo: "assets/tools/wordpress.png"
+        subtitle: "Website & blog platform"
+        url: "https://wordpress.selfhostyour.tech"
+
+  - name: "AI & Tools"
+    icon: "fas fa-robot"
+    items:
+      - name: "LibreChat"
+        logo: "assets/tools/librechat.png"
+        subtitle: "AI chat interface"
+        url: "https://chat.selfhostyour.tech"
+      - name: "Helix"
+        logo: "assets/tools/helix.png"
+        subtitle: "AI development assistant"
+        url: "https://helix.selfhostyour.tech"
+      - name: "Reflector"
+        logo: "assets/tools/reflector.png"
+        subtitle: "AI content analysis"
+        url: "https://reflector.selfhostyour.tech"
+
+links:
+  - name: "Documentation"
+    icon: "fas fa-book"
+    url: "https://docs.selfhostyour.tech"
+  - name: "GitHub"
+    icon: "fab fa-github"
+    url: "https://github.com/Monadical-SAS/selfhostyourtech"
