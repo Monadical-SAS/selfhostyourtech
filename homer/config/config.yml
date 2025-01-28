@@ -23,14 +23,14 @@ colors:
     link-hover: "#6d28d9"
 
 services:
-  # - name: "Communication"
-  #   icon: "fas fa-comments"
-  #   items:
-  #     - name: "Zulip"
-  #       logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/zulip.png"
-  #       subtitle: "Team chat with threaded conversations"
-  #       url: "https://zulip.selfhostyour.tech"
-  #       target: "_blank"
+  - name: "Communication"
+    icon: "fas fa-comments"
+    items:
+      - name: "Zulip"
+        logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/zulip.png"
+        subtitle: "Team chat with threaded conversations"
+        url: "https://zulip.selfhostyour.tech"
+        target: "_blank"
 
   - name: "Office"
     icon: "fas fa-briefcase"
