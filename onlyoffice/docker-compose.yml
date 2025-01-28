@@ -11,14 +11,14 @@ services:
       - document_forgotten:/var/lib/onlyoffice/documentserver/App_Data/cache/files/forgotten
     environment:
       - JWT_ENABLED=true
-      - JWT_SECRET=your_jwt_secret  # Change this!
+      - JWT_SECRET=${JWT_SECRET}
       - JWT_HEADER=Authorization
       - DB_TYPE=postgres
       - DB_HOST=db
       - DB_PORT=5432
-      - DB_NAME=onlyoffice
-      - DB_USER=onlyoffice
-      - DB_PWD=your_password  # Change this!
+      - DB_NAME=${POSTGRES_DB}
+      - DB_USER=${POSTGRES_USER}
+      - DB_PWD=${DB_PASSWORD}
       - REDIS_SERVER_HOST=redis
       - REDIS_SERVER_PORT=6379
     networks:
@@ -47,9 +47,9 @@ services:
     volumes:
       - postgresql_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=onlyoffice
-      - POSTGRES_USER=onlyoffice
-      - POSTGRES_PASSWORD=your_password  # Change this!
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     networks:
       - internal
       - traefik-public
@@ -59,7 +59,7 @@ services:
     restart: always
     volumes:
       - redis_data:/data
-    command: redis-server --requirepass your_redis_password  # Change this!
+    command: redis-server --requirepass ${REDIS_PASSWORD}
     networks:
       - internal
       - traefik-public
