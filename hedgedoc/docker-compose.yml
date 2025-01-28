@@ -3,24 +3,23 @@ services:
   hedgedoc_database:
     image: postgres:13.4-alpine
     environment:
-      - POSTGRES_USER=hedgedoc
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=hedgedoc
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     volumes:
       - database:/var/lib/postgresql/data
     networks:
       - internal
-      - traefik-public
     restart: always
   hedgedoc:
     # Make sure to use the latest release from https://hedgedoc.org/latest-release
     image: quay.io/hedgedoc/hedgedoc:1.10.0
     environment:
-      - CMD_DB_URL=postgres://hedgedoc:password@hedgedoc_database:5432/hedgedoc
+      - CMD_DB_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@hedgedoc_database:5432/${POSTGRES_DB}
       - CMD_DOMAIN=hedgedoc.selfhostyour.tech
       - CMD_PROTOCOL_USESSL=true
       - CMD_URL_ADDPORT=false
-      - CMD_SESSION_SECRET=change_this_to_a_long_random_string
+      - CMD_SESSION_SECRET=${HD_SESSION_SECRET}
       - CMD_CSP_ENABLE=true
       - CMD_HELMET_ENABLE=true
     volumes:
