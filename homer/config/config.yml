@@ -5,7 +5,7 @@ logo: "logo.png"
 header: true
 footer: '<p>Created with <span class="has-text-danger">❤️</span> by <a href="https://monadical.com">Monadical</a></p>'
 
-theme: default
+theme: walkxcode
 
 colors:
   light:
@@ -27,7 +27,7 @@ services:
     icon: "fas fa-comments"
     items:
       - name: "Zulip"
-        logo: "assets/tools/zulip.png"
+        logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/zulip.png"
         subtitle: "Team chat with threaded conversations"
         url: "https://zulip.selfhostyour.tech"
         target: "_blank"
@@ -36,15 +36,16 @@ services:
     icon: "fas fa-briefcase"
     items:
       - name: "Nextcloud"
-        logo: "assets/tools/nextcloud.png"
+        type: Nextcloud
+        logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/nextcloud.png"
         subtitle: "File sharing and collaboration"
         url: "https://nextcloud.selfhostyour.tech"
       - name: "ONLYOFFICE"
-        logo: "assets/tools/onlyoffice.png"
+        logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/onlyoffice.png"
         subtitle: "Online document editing"
         url: "https://onlyoffice.selfhostyour.tech"
       - name: "HedgeDoc"
-        logo: "assets/tools/hedgedoc.png"
+        logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/hedgedoc.png"
         subtitle: "Collaborative markdown editor"
         url: "https://hedgedoc.selfhostyour.tech"
 
@@ -52,11 +53,11 @@ services:
     icon: "fas fa-database"
     items:
       - name: "Baserow"
-        logo: "assets/tools/baserow.png"
+        logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/baserow.png"
         subtitle: "No-code database & CRM"
         url: "https://baserow.selfhostyour.tech"
       - name: "Twenty"
-        logo: "assets/tools/twenty.png"
+        logo: "https://kagi.com/proxy/YWJzOi8vZGlzdC9pY29ucy90d2VudHktY3JtXzIyMjY2Ni53ZWJw.png?c=ktUNJsvV_6Mi937H24fM6pFecXGUZJOyzSipagwBjW_MVZ3OzkQab6raJDd_jQcqgM1EscqgD-slkavCSN7gL78Wt9_7pwlu7WLwNDGWGIEEyiqu6GrMV4KG4uLwuTWGuZOITY8Ln8ze0HdRs4PAc1u2Ozls7smQSPpDe7UwpEWBwYnZMBAotWRmt5i0c9iYLLgQTaWwdtmbIEd6crmIWEwq4ZDJsk63YVSnzYJ1OPk%3D"
         subtitle: "Modern CRM platform"
         url: "https://twenty.selfhostyour.tech"
 
@@ -64,11 +65,12 @@ services:
     icon: "fas fa-shield-alt"
     items:
       - name: "Authentik"
-        logo: "assets/tools/authentik.png"
+        logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/authentik.png"
         subtitle: "Identity provider & SSO"
         url: "https://authentik.selfhostyour.tech"
       - name: "Traefik"
-        logo: "assets/tools/traefik.png"
+        type: Traefik
+        logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/traefik.png"
         subtitle: "Reverse proxy & SSL"
         url: "https://traefik.selfhostyour.tech"
 
@@ -76,15 +78,16 @@ services:
     icon: "fas fa-code-branch"
     items:
       - name: "Portainer"
-        logo: "assets/tools/portainer.png"
+        type: Portainer
+        logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/portainer.png"
         subtitle: "Container management"
         url: "https://portainer.selfhostyour.tech"
       - name: "n8n"
-        logo: "assets/tools/n8n.png"
+        logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/n8n.png"
         subtitle: "Workflow automation"
         url: "https://n8n.selfhostyour.tech"
       - name: "Gitea"
-        logo: "assets/tools/gitea.png"
+        logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/gitea.png"
         subtitle: "Git server"
         url: "https://gitea.selfhostyour.tech"
 
@@ -92,11 +95,11 @@ services:
     icon: "fas fa-globe"
     items:
       - name: "Ghost"
-        logo: "assets/tools/ghost.png"
+        logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/ghost-light.png"
         subtitle: "Professional publishing platform"
         url: "https://ghost.selfhostyour.tech"
       - name: "WordPress"
-        logo: "assets/tools/wordpress.png"
+        logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/wordpress.png"
         subtitle: "Website & blog platform"
         url: "https://wordpress.selfhostyour.tech"
 
@@ -104,15 +107,15 @@ services:
     icon: "fas fa-robot"
     items:
       - name: "LibreChat"
-        logo: "assets/tools/librechat.png"
+        logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/librechat.png"
         subtitle: "AI chat interface"
         url: "https://chat.selfhostyour.tech"
       - name: "Helix"
-        logo: "assets/tools/helix.png"
+        logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/helix.png"
         subtitle: "AI development assistant"
         url: "https://helix.selfhostyour.tech"
       - name: "Reflector"
-        logo: "assets/tools/reflector.png"
+        logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/reflector.png"
         subtitle: "AI content analysis"
         url: "https://reflector.selfhostyour.tech"
 
