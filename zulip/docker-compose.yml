@@ -9,20 +9,22 @@ services:
     expose:
       - 5432
     environment:
-      POSTGRES_DB: zulip
-      POSTGRES_USER: zulip
-      POSTGRES_PASSWORD: zulip
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - './data/postgres:/var/lib/postgresql/data'
     shm_size: 256m
-    cpus: 4
+    cpus: 2
     mem_limit: 3072m
     restart: on-failure
+    networks:
+      - internal
 
   redis:
     # https://hub.docker.com/_/redis/tags
     image: 'redis:alpine'
-    command: /bin/sh -c 'redis-server --appendonly yes --requirepass zulip'
+    command: /bin/sh -c 'redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}'
     expose:
       - 6379
     volumes:
@@ -30,6 +32,8 @@ services:
     cpus: 2
     mem_limit: 1024m
     restart: on-failure
+    networks:
+      - internal
 
   memcached:
     # https://hub.docker.com/_/memcached/tags
@@ -39,19 +43,20 @@ services:
       - '-euc'
       - |
         echo 'mech_list: plain' > "$$SASL_CONF_PATH"
-        echo "zulip@$$HOSTNAME:$$MEMCACHED_PASSWORD" > "$$MEMCACHED_SASL_PWDB"
-        echo "zulip@localhost:$$MEMCACHED_PASSWORD" >> "$$MEMCACHED_SASL_PWDB"
+        echo "zulip@$$HOSTNAME:${MEMCACHED_PASSWORD}" > "$$MEMCACHED_SASL_PWDB"
+        echo "zulip@localhost:${MEMCACHED_PASSWORD}" >> "$$MEMCACHED_SASL_PWDB"
         exec memcached -S
     environment:
       SASL_CONF_PATH: '/home/memcache/memcached.conf'
       MEMCACHED_SASL_PWDB: '/home/memcache/memcached-sasl-db'
-      MEMCACHED_PASSWORD: 'zulip'
+      MEMCACHED_PASSWORD: ${MEMCACHED_PASSWORD}
     expose:
       - 11211
     cpus: 2
     mem_limit: 1024m
     restart: on-failure
-
+    networks:
+      - internal
 
   rabbitmq:
     # https://hub.docker.com/_/rabbitmq/tags
@@ -59,13 +64,15 @@ services:
     expose:
       - 5672
     environment:
-      RABBITMQ_DEFAULT_USER: zulip
-      RABBITMQ_DEFAULT_PASS: zulip
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
     volumes:
       - ./data/rabbitmq:/var/lib/rabbitmq
-    cpus: 4
-    mem_limit: 2048m
+    cpus: 2
+    mem_limit: 1024m
     restart: on-failure
+    networks:
+      - internal
 
   zulip:
     # https://github.com/zulip/docker-zulip#configuration
@@ -73,46 +80,49 @@ services:
     image: 'zulip/docker-zulip:9.3-0'
     environment:
       # Zulip settings
-      SETTING_EXTERNAL_HOST: "zulip.selfhostyour.tech"
-      DISABLE_HTTPS: 'True'
+      SETTING_EXTERNAL_HOST: zulip.selfhostyour.tech
+      DISABLE_HTTPS: 'False'
       SETTING_ALLOWED_HOSTS: "['127.0.0.1', 'zulip.selfhostyour.tech']"
       ZULIP_CUSTOM_SETTINGS: |
           CAMO_URI = ''
-      SETTING_ZULIP_ADMINISTRATOR: "zulip@selfhostyour.tech"
+          SOCIAL_AUTH_OIDC_ENABLED_IDPS: dict[str, Any] = {"authentik": {"oidc_url": "https://authentik.selfhostyour.tech/application/o/zulipid","display_name": "Authentik","display_icon": None,"client_id": "bHXTBc8j7KS9Ub1JsX5IyAyGIRb1UTvp1epzsxIf","secret": get_secret("social_auth_oidc_secret"),"auto_signup": False,}}
+      SETTING_ZULIP_ADMINISTRATOR: ${EMAIL_HOST_USER}
       SETTING_PASSWORD_MIN_ZXCVBN_QUALITY: "0.3"
-      ZULIP_AUTH_BACKENDS: 'EmailAuthBackend'
+      ZULIP_AUTH_BACKENDS: 'GenericOpenIdConnectBackend'
       ZULIP_USER_CREATION_ENABLED: 'True'
-      SETTING_GIPHY_API_KEY: "<insert key here>"
-      SETTING_VIDEO_ZOOM_CLIENT_ID: "<insert key here>"
+      SETTING_GIPHY_API_KEY: ${GIPHY_API_KEY}
+      SETTING_VIDEO_ZOOM_CLIENT_ID: ${VIDEO_ZOOM_CLIENT_ID}
       SETTING_WEB_PUBLIC_STREAMS_ENABLED: 'True'
       # Connections:
       DB_HOST: 'postgres'
       DB_HOST_PORT: '5432'
-      DB_USER: 'zulip'
+      DB_USER: ${POSTGRES_USER}
       SETTING_MEMCACHED_LOCATION: 'memcached:11211'
       SETTING_RABBITMQ_HOST: 'rabbitmq'
       SETTING_REDIS_HOST: 'redis'
       LOADBALANCER_IPS: '192.168.0.0/16,172.0.0.0/8'
+      SSL_CERTIFICATE_GENERATION: "False"
       # Email config:
-      SETTING_EMAIL_HOST: 'mail.selfhostyour.tech'
-      SETTING_EMAIL_HOST_USER: 'admin@selfhostyour.tech'
-      SETTING_EMAIL_PORT: '587'
+      SETTING_EMAIL_HOST: ${EMAIL_HOST}
+      SETTING_EMAIL_HOST_USER: ${EMAIL_HOST_USER}
+      SETTING_EMAIL_PORT: ${EMAIL_PORT}
       SETTING_EMAIL_USE_SSL: 'False'
       SETTING_EMAIL_USE_TLS: 'True'
-      SETTING_NOREPLY_EMAIL_ADDRESS: 'zulip@selfhostyour.tech'
+      SETTING_NOREPLY_EMAIL_ADDRESS: ${NOREPLY_EMAIL}
       SETTING_ADD_TOKENS_TO_NOREPLY_ADDRESS: 'False'
       SETTING_PUSH_NOTIFICATION_BOUNCER_URL: 'https://push.zulipchat.com'
       # Secrets:
-      SECRETS_secret_key: '<insert key here>'
-      SECRETS_email_password: "<insert SMTP pass here>"
-      SECRETS_rabbitmq_password: 'zulip'
-      SECRETS_postgres_password: 'zulip'
-      SECRETS_memcached_password: 'zulip'
-      SECRETS_redis_password: 'zulip'
-      SECRETS_video_zoom_client_secret: "<insert key here>"
+      SECRETS_secret_key: ${ZULIP_SECRET_KEY}
+      SECRETS_email_password: ${EMAIL_HOST_PASSWORD}
+      SECRETS_rabbitmq_password: ${RABBITMQ_PASSWORD}
+      SECRETS_postgres_password: ${POSTGRES_PASSWORD}
+      SECRETS_memcached_password: ${MEMCACHED_PASSWORD}
+      SECRETS_redis_password: ${REDIS_PASSWORD}
+      SECRETS_video_zoom_client_secret: ${VIDEO_ZOOM_CLIENT_SECRET}
+      SECRETS_social_auth_oidc_secret: ${SOCIAL_AUTH_OIDC_SECRET}
     volumes:
       - ./data/zulip:/data
-      - ./etc/zulip/zulip.conf:/etc/zulip/zulip.conf
+      - ./etc/zulip/saml/idps:/etc/zulip/saml/idps
       - ./data/logs/zulip:/var/log/zulip
     depends_on:
       - postgres
@@ -125,17 +135,37 @@ services:
         hard: 1048576
     healthcheck:
       test: ["CMD", "curl", "--silent", "http://127.0.0.1:80/login/"]
-    cpus: 4
+    cpus: 2
     mem_limit: 4096m
     restart: on-failure
+    networks:
+      - internal
+      - traefik-public
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - traefik.http.routers.zulip.rule=Host(`zulip.selfhostyour.tech`)
+      - traefik.http.routers.zulip.entrypoints=web
+      - traefik.http.routers.zulip.middlewares=redirect-to-https
+      - traefik.http.routers.zulip-secure.rule=Host(`zulip.selfhostyour.tech`)
+      - traefik.http.routers.zulip-secure.entrypoints=websecure
+      - traefik.http.routers.zulip-secure.tls=true
+      - traefik.http.routers.zulip-secure.tls.certresolver=letsencrypt
+      - traefik.http.services.zulip.loadbalancer.server.port=80
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true
+      - traefik.http.middlewares.zulip-headers.headers.customFrameOptionsValue=SAMEORIGIN
+      - traefik.http.middlewares.zulip-headers.headers.stsSeconds=15552000
+      - traefik.http.middlewares.zulip-headers.headers.forceSTSHeader=true
+      - traefik.http.routers.zulip-secure.middlewares=zulip-headers
 
-  argo:
-    # https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/tunnel-guide/local/local-management/arguments/
-    # https://hub.docker.com/r/cloudflare/cloudflared/tags
-    image: cloudflare/cloudflared
-    command: tunnel --no-autoupdate --retries 15 --protocol http2 --overwrite-dns --hostname zulip.selfhostyour.tech --url http://zulip:80 --name zulip.selfhostyour.tech
-    volumes:
-      - ./etc/cloudflared:/etc/cloudflared
-    cpus: 4
-    mem_limit: 2048m
-    restart: on-failure
+volumes:
+  zulip:
+  postgresql-14:
+  rabbitmq:
+  redis:
+
+networks:
+  internal:
+  traefik-public:
+    external: true
