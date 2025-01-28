@@ -1,0 +1,69 @@
+services:
+  nextcloud:
+    image: nextcloud:apache
+    restart: always
+    volumes:
+      - nextcloud_data:/var/www/html
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=your_password  # Change this!
+      - REDIS_HOST=redis
+      - APACHE_SERVER_NAME=nextcloud.selfhostyour.tech
+      - NEXTCLOUD_TRUSTED_DOMAINS=nextcloud.selfhostyour.tech
+      - TRUSTED_PROXIES=172.18.0.0/16
+    depends_on:
+      - db
+      - redis
+    networks:
+      - internal
+      - traefik-public
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - traefik.http.routers.nextcloud.rule=Host(`nextcloud.selfhostyour.tech`)
+      - traefik.http.routers.nextcloud.entrypoints=web
+      - traefik.http.routers.nextcloud.middlewares=redirect-to-https
+      - traefik.http.routers.nextcloud-secure.rule=Host(`nextcloud.selfhostyour.tech`)
+      - traefik.http.routers.nextcloud-secure.entrypoints=websecure
+      - traefik.http.routers.nextcloud-secure.tls=true
+      - traefik.http.routers.nextcloud-secure.tls.certresolver=letsencrypt
+      - traefik.http.services.nextcloud.loadbalancer.server.port=80
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true
+      - traefik.http.middlewares.nextcloud-header.headers.customFrameOptionsValue=SAMEORIGIN
+      - traefik.http.middlewares.nextcloud-header.headers.stsSeconds=15552000
+      - traefik.http.middlewares.nextcloud-header.headers.forceSTSHeader=true
+      - traefik.http.routers.nextcloud-secure.middlewares=nextcloud-header
+
+  db:
+    image: mariadb:10.6
+    restart: always
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - internal
+    environment:
+      - MYSQL_ROOT_PASSWORD=your_root_password  # Change this!
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=your_password  # Change this!
+
+  redis:
+    image: redis:alpine
+    restart: always
+    volumes:
+      - redis_data:/data
+    networks:
+      - internal
+
+volumes:
+  nextcloud_data:
+  db_data:
+  redis_data:
+
+networks:
+  internal:
+  traefik-public:
+    external: true
