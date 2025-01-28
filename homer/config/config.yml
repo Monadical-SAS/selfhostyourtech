@@ -1,0 +1,145 @@
+---
+title: "SelfHosted Kit"
+subtitle: "Self-hosted business infrastructure"
+logo: "logo.png"
+header: true
+footer: '<p>Created with <span class="has-text-danger">❤️</span> by <a href="https://monadical.com">Monadical</a></p>'
+
+theme: walkxcode
+
+colors:
+  light:
+    highlight-primary: "#7c3aed"
+    highlight-secondary: "#9333ea"
+    highlight-hover: "#6d28d9"
+    background: "#1f2937"
+    card-background: "#111827"
+    text: "#ffffff"
+    text-header: "#fafafa"
+    text-title: "#ffffff"
+    text-subtitle: "#f5f5f5"
+    card-shadow: rgba(0, 0, 0, 0.4)
+    link: "#7c3aed"
+    link-hover: "#6d28d9"
+
+services:
+  # - name: "Communication"
+  #   icon: "fas fa-comments"
+  #   items:
+  #     - name: "Zulip"
+  #       logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/zulip.png"
+  #       subtitle: "Team chat with threaded conversations"
+  #       url: "https://zulip.selfhostyour.tech"
+  #       target: "_blank"
+
+  - name: "Office"
+    icon: "fas fa-briefcase"
+    items:
+      - name: "Nextcloud"
+        type: Nextcloud
+        logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/nextcloud.png"
+        subtitle: "File sharing and collaboration"
+        url: "https://nextcloud.selfhostyour.tech"
+        target: "_blank"
+      - name: "ONLYOFFICE"
+        logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/onlyoffice.png"
+        subtitle: "Online document editing"
+        url: "https://onlyoffice.selfhostyour.tech"
+        target: "_blank"
+      - name: "HedgeDoc"
+        logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/hedgedoc.png"
+        subtitle: "Collaborative markdown editor"
+        url: "https://hedgedoc.selfhostyour.tech"
+        target: "_blank"
+
+  - name: "CRM & Data"
+    icon: "fas fa-database"
+    items:
+      - name: "Baserow"
+        logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/baserow.png"
+        subtitle: "No-code database & CRM"
+        url: "https://baserow.selfhostyour.tech"
+        target: "_blank"
+      # - name: "Twenty"
+      #   logo: "https://kagi.com/proxy/YWJzOi8vZGlzdC9pY29ucy90d2VudHktY3JtXzIyMjY2Ni53ZWJw.png?c=ktUNJsvV_6Mi937H24fM6pFecXGUZJOyzSipagwBjW_MVZ3OzkQab6raJDd_jQcqgM1EscqgD-slkavCSN7gL78Wt9_7pwlu7WLwNDGWGIEEyiqu6GrMV4KG4uLwuTWGuZOITY8Ln8ze0HdRs4PAc1u2Ozls7smQSPpDe7UwpEWBwYnZMBAotWRmt5i0c9iYLLgQTaWwdtmbIEd6crmIWEwq4ZDJsk63YVSnzYJ1OPk%3D"
+      #   subtitle: "Modern CRM platform"
+      #   url: "https://twenty.selfhostyour.tech"
+      #   target: "_blank"
+
+  - name: "Security"
+    icon: "fas fa-shield-alt"
+    items:
+      - name: "Authentik"
+        logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/authentik.png"
+        subtitle: "Identity provider & SSO"
+        url: "https://authentik.selfhostyour.tech"
+        target: "_blank"
+      - name: "Traefik"
+        type: Traefik
+        logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/traefik.png"
+        subtitle: "Reverse proxy & SSL"
+        url: "https://traefik.selfhostyour.tech"
+        target: "_blank"
+
+  # - name: "DevOps"
+  #   icon: "fas fa-code-branch"
+  #   items:
+  #     - name: "Portainer"
+  #       type: Portainer
+  #       logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/portainer.png"
+  #       subtitle: "Container management"
+  #       url: "https://portainer.selfhostyour.tech"
+  #       target: "_blank"
+  #     - name: "n8n"
+  #       logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/n8n.png"
+  #       subtitle: "Workflow automation"
+  #       url: "https://n8n.selfhostyour.tech"
+  #       target: "_blank"
+  #     - name: "Gitea"
+  #       logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/gitea.png"
+  #       subtitle: "Git server"
+  #       url: "https://gitea.selfhostyour.tech"
+  #       target: "_blank"
+
+  # - name: "Publishing"
+  #   icon: "fas fa-globe"
+  #   items:
+  #     - name: "Ghost"
+  #       logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/ghost-light.png"
+  #       subtitle: "Professional publishing platform"
+  #       url: "https://ghost.selfhostyour.tech"
+  #       target: "_blank"
+  #     - name: "WordPress"
+  #       logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/wordpress.png"
+  #       subtitle: "Website & blog platform"
+  #       url: "https://wordpress.selfhostyour.tech"
+  #       target: "_blank"
+
+  # - name: "AI & Tools"
+  #   icon: "fas fa-robot"
+  #   items:
+  #     - name: "LibreChat"
+  #       logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/librechat.png"
+  #       subtitle: "AI chat interface"
+  #       url: "https://chat.selfhostyour.tech"
+  #       target: "_blank"
+  #     - name: "Helix"
+  #       logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/helix.png"
+  #       subtitle: "AI development assistant"
+  #       url: "https://helix.selfhostyour.tech"
+  #       target: "_blank"
+  #     - name: "Reflector"
+  #       logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/reflector.png"
+  #       subtitle: "AI content analysis"
+  #       url: "https://reflector.selfhostyour.tech"
+  #       target: "_blank"
+
+links:
+  - name: "Documentation"
+    icon: "fas fa-book"
+    url: "https://docs.selfhostyour.tech"
+    target: "_blank"
+  - name: "GitHub"
+    icon: "fab fa-github"
+    url: "https://github.com/Monadical-SAS/selfhostyourtech"
+    target: "_blank"
