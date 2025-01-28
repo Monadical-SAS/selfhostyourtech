@@ -1,0 +1,82 @@
+version: '3'
+
+services:
+  onlyoffice:
+    image: onlyoffice/documentserver
+    restart: always
+    volumes:
+      - document_data:/var/www/onlyoffice/Data
+      - document_log:/var/log/onlyoffice
+      - document_cache:/var/lib/onlyoffice
+      - document_files:/var/www/onlyoffice/DocumentServer/data
+      - document_fonts:/usr/share/fonts/truetype/custom
+      - document_forgotten:/var/lib/onlyoffice/documentserver/App_Data/cache/files/forgotten
+    environment:
+      - JWT_ENABLED=true
+      - JWT_SECRET=your_jwt_secret  # Change this!
+      - JWT_HEADER=Authorization
+      - DB_TYPE=postgres
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=onlyoffice
+      - DB_USER=onlyoffice
+      - DB_PWD=your_password  # Change this!
+      - REDIS_SERVER_HOST=redis
+      - REDIS_SERVER_PORT=6379
+    networks:
+      - internal
+      - traefik-public
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - traefik.http.routers.onlyoffice.rule=Host(`onlyoffice.selfhostyour.tech`)
+      - traefik.http.routers.onlyoffice.entrypoints=web
+      - traefik.http.routers.onlyoffice.middlewares=redirect-to-https
+      - traefik.http.routers.onlyoffice-secure.rule=Host(`onlyoffice.selfhostyour.tech`)
+      - traefik.http.routers.onlyoffice-secure.entrypoints=websecure
+      - traefik.http.routers.onlyoffice-secure.tls=true
+      - traefik.http.routers.onlyoffice-secure.tls.certresolver=letsencrypt
+      - traefik.http.services.onlyoffice.loadbalancer.server.port=8085
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:13-alpine
+    restart: always
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=onlyoffice
+      - POSTGRES_USER=onlyoffice
+      - POSTGRES_PASSWORD=your_password  # Change this!
+    networks:
+      - internal
+      - traefik-public
+
+  redis:
+    image: redis:6-alpine
+    restart: always
+    volumes:
+      - redis_data:/data
+    command: redis-server --requirepass your_redis_password  # Change this!
+    networks:
+      - internal
+      - traefik-public
+
+volumes:
+  document_data:
+  document_log:
+  document_cache:
+  document_files:
+  document_fonts:
+  document_forgotten:
+  postgresql_data:
+  redis_data:
+
+networks:
+  internal:
+  traefik-public:
+    external: true
