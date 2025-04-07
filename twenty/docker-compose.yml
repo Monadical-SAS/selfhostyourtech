@@ -20,20 +20,18 @@ services:
     volumes:
       - server-local-data:/app/packages/twenty-server/.local-storage
       - docker-data:/app/docker-data
-    ports:
-      - "3002:3002"
     environment:
-      NODE_PORT: 3002
-      PG_DATABASE_URL: postgres://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:-postgres}@${PG_DATABASE_HOST:-db}:${PG_DATABASE_PORT:-5432}/default
-      SERVER_URL: ${SERVER_URL}
-      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      - SERVICE_FQDN_SERVER_3002
+      - NODE_PORT: 3002
+      - PG_DATABASE_URL: postgres://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:-postgres}@${PG_DATABASE_HOST:-db}:${PG_DATABASE_PORT:-5432}/default
+      - SERVER_URL: ${SERVER_URL}
+      - REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      - STORAGE_TYPE: ${STORAGE_TYPE}
+      - STORAGE_S3_REGION: ${STORAGE_S3_REGION}
+      - STORAGE_S3_NAME: ${STORAGE_S3_NAME}
+      - STORAGE_S3_ENDPOINT: ${STORAGE_S3_ENDPOINT}
 
-      STORAGE_TYPE: ${STORAGE_TYPE}
-      STORAGE_S3_REGION: ${STORAGE_S3_REGION}
-      STORAGE_S3_NAME: ${STORAGE_S3_NAME}
-      STORAGE_S3_ENDPOINT: ${STORAGE_S3_ENDPOINT}
-
-      APP_SECRET: ${APP_SECRET:-replace_me_with_a_random_string}
+      - APP_SECRET: ${APP_SECRET:-replace_me_with_a_random_string}
       # MESSAGING_PROVIDER_GMAIL_ENABLED: ${MESSAGING_PROVIDER_GMAIL_ENABLED}
       # CALENDAR_PROVIDER_GOOGLE_ENABLED: ${CALENDAR_PROVIDER_GOOGLE_ENABLED}
       # AUTH_GOOGLE_CLIENT_ID: ${AUTH_GOOGLE_CLIENT_ID}
