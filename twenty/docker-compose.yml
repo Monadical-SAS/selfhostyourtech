@@ -16,9 +16,9 @@ services:
       - server-local-data:/app/packages/twenty-server/.local-storage
       - docker-data:/app/docker-data
     ports:
-      - "3000:3000"
+      - "3002:3002"
     environment:
-      NODE_PORT: 3000
+      NODE_PORT: 3002
       PG_DATABASE_URL: postgres://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:-postgres}@${PG_DATABASE_HOST:-db}:${PG_DATABASE_PORT:-5432}/default
       SERVER_URL: ${SERVER_URL}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
