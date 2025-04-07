@@ -4,11 +4,16 @@ services:
   change-vol-ownership:
     image: ubuntu
     user: root
+    restart: "no"
+    exclude_from_hc: true
     volumes:
       - server-local-data:/tmp/server-local-data
       - docker-data:/tmp/docker-data
     command: >
-      bash -c " chown -R 1000:1000 /tmp/server-local-data && chown -R 1000:1000 /tmp/docker-data"
+      bash -c "
+      chown -R 1000:1000 /tmp/server-local-data &&
+      chown -R 1000:1000 /tmp/docker-data &&
+      echo 'Volume ownership changed successfully'"
 
   server:
     image: twentycrm/twenty:${TAG:-latest}
