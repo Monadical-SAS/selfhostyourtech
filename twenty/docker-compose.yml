@@ -10,7 +10,10 @@ services:
       - server-local-data:/tmp/server-local-data
       - docker-data:/tmp/docker-data
     command: >
-      bash -c " chown -R 1000:1000 /tmp/server-local-data && chown -R 1000:1000 /tmp/docker-data && echo 'Volume ownership changed successfully'"
+      bash -c "
+      chown -R 1000:1000 /tmp/server-local-data &&
+      chown -R 1000:1000 /tmp/docker-data &&
+      echo 'Volume ownership changed successfully'"
 
   server:
     image: twentycrm/twenty:${TAG:-latest}
@@ -52,7 +55,6 @@ services:
       # AUTH_MICROSOFT_CLIENT_SECRET: ${AUTH_MICROSOFT_CLIENT_SECRET}
       # AUTH_MICROSOFT_CALLBACK_URL: ${AUTH_MICROSOFT_CALLBACK_URL}
       # AUTH_MICROSOFT_APIS_CALLBACK_URL: ${AUTH_MICROSOFT_APIS_CALLBACK_URL}
-
 
     depends_on:
       change-vol-ownership:
