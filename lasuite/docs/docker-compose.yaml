@@ -10,12 +10,6 @@ services:
       - .env
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
-      # App database configuration
-      - DB_HOST=postgresql
-      - DB_NAME=docs
-      - DB_USER=docs
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_PORT=5432
 
       # Postgresql db container configuration
       - POSTGRES_DB=docs
@@ -44,6 +38,12 @@ services:
     restart: always
     environment:
       # - SERVICE_FQDN_BACKEND_8000
+      # App database configuration
+      - DB_HOST=postgresql
+      - DB_NAME=docs
+      - DB_USER=docs
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=5432
       # Common variables
       - DOCS_HOST=${DOCS_HOST}
       - S3_HOST=${S3_HOST}
