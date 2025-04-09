@@ -10,6 +10,17 @@ services:
       - .env
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
+      # App database configuration
+      - DB_HOST=postgresql
+      - DB_NAME=docs
+      - DB_USER=docs
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=5432
+
+      # Postgresql db container configuration
+      - POSTGRES_DB=docs
+      - POSTGRES_USER=docs
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
       - ./data/databases/backend:/var/lib/postgresql/data/pgdata
 
@@ -140,7 +151,7 @@ services:
     environment:
     - MINIO_ROOT_USER=${MINIO_ROOT_USER}
     - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-    - SERVICE_FQDN_MINIO_9009
+    - SERVICE_FQDN_MINIO_35895
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 1s
