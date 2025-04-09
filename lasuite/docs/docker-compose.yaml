@@ -115,7 +115,6 @@ services:
       #FRONTEND_CSS_URL=https://storage.yourdomain.tld/themes/custom.css
       #FRONTEND_FOOTER_FEATURE_ENABLED=true
       #FRONTEND_URL_JSON_FOOTER=https://docs.domain.tld/contents/footer-demo.json
-
     env_file:
       - .env
     # networks:
@@ -148,6 +147,8 @@ services:
 
   minio:
     image: minio/minio
+    env_file:
+      - .env
     environment:
     - MINIO_ROOT_USER=${MINIO_ROOT_USER}
     - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
