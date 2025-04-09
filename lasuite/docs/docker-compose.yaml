@@ -15,6 +15,17 @@ services:
 
   redis:
     image: redis:5
+    restart: always
+    volumes:
+      - 'redis-data:/data'
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      interval: 5s
+      timeout: 20s
+      retries: 10
 
   backend:
     image: lasuite/impress-backend:latest
@@ -96,8 +107,8 @@ services:
 
     env_file:
       - .env
-    networks:
-      - proxy-tier
+    # networks:
+    #   - proxy-tier
     healthcheck:
       test: [ "CMD", "python", "manage.py", "check" ]
       interval: 15s
@@ -153,8 +164,8 @@ services:
       backend:
         condition: 
           service_healthy
-    networks:
-    - proxy-tier
+    # networks:
+    # - proxy-tier
 
   nginxproxy:
     image: nginxproxy/nginx-proxy
@@ -164,9 +175,9 @@ services:
     volumes:
       - html:/usr/share/nginx/html
       - ./etc/default.conf:/etc/nginx/templates/default.conf
-    networks:
-      - proxy-tier
+    # networks:
+    #   - proxy-tier
 
-networks:
- proxy-tier:
-   external: true
+# networks:
+#  proxy-tier:
+#    external: true
