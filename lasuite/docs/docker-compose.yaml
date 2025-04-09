@@ -20,6 +20,8 @@ services:
     image: lasuite/impress-backend:latest
     user: ${DOCKER_USER:-1000}
     restart: always
+    ports:
+      - 8083:8083
     environment:
       - DJANGO_CONFIGURATION=Production
       # Common variables
@@ -112,7 +114,9 @@ services:
   y-provider:
     image: lasuite/impress-y-provider:latest
     user: ${DOCKER_USER:-1000}
-    entrypoint:
+    ports:
+      - 4444:4444
+    environment:
       - Y_PROVIDER_API_KEY=${Y_PROVIDER_API_KEY}
       - COLLABORATION_SERVER_SECRET=${COLLABORATION_SERVER_SECRET}
       - COLLABORATION_SERVER_ORIGIN=https://${DOCS_HOST}
@@ -127,10 +131,11 @@ services:
     env_file:
       - .env
       # Uncomment and set your values if using our nginx proxy example
-      #environment:
-      # - VIRTUAL_HOST=${DOCS_HOST} # used by nginx proxy
-      # - VIRTUAL_PORT=8083 # used by nginx proxy
-      # - LETSENCRYPT_HOST=${DOCS_HOST} # used by lets encrypt to generate TLS certificate
+    ports:
+      - 3003:3003
+    # - VIRTUAL_HOST=${DOCS_HOST} # used by nginx proxy
+    # - VIRTUAL_PORT=8083 # used by nginx proxy
+    # - LETSENCRYPT_HOST=${DOCS_HOST} # used by lets encrypt to generate TLS certificate
     volumes:
       - ./default.conf.template:/etc/nginx/templates/default.conf.template
     depends_on:
