@@ -151,7 +151,9 @@ services:
     environment:
     - MINIO_ROOT_USER=${MINIO_ROOT_USER}
     - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    - MINIO_BROWSER_REDIRECT_URL=https://${MINIO_HOST}/ui
     - SERVICE_FQDN_MINIO_9000
+    # - SERVICE_FQDN_MINIO_9001
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 1s
