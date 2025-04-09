@@ -21,7 +21,7 @@ services:
     user: ${DOCKER_USER:-1000}
     restart: always
     environment:
-      - SERVICE_FQDN_BACKEND_8000
+      # - SERVICE_FQDN_BACKEND_8000
       # Common variables
       - DOCS_HOST=${DOCS_HOST}
       - S3_HOST=${S3_HOST}
@@ -115,7 +115,7 @@ services:
     image: lasuite/impress-y-provider:latest
     user: ${DOCKER_USER:-1000}
     environment:
-      - SERVICE_FQDN_YPROVIDER_4444
+      # - SERVICE_FQDN_YPROVIDER_4444
       - Y_PROVIDER_API_KEY=${Y_PROVIDER_API_KEY}
       - COLLABORATION_SERVER_SECRET=${COLLABORATION_SERVER_SECRET}
       - COLLABORATION_SERVER_ORIGIN=https://${DOCS_HOST}
@@ -143,8 +143,8 @@ services:
   frontend:
     image: lasuite/impress-frontend:latest
     user: "101"
-    environment:
-      - SERVICE_FQDN_FRONTEND_3000
+    # environment:
+    #   - SERVICE_FQDN_FRONTEND_3000
     env_file:
       - .env
     volumes:
