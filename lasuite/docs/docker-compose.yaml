@@ -20,10 +20,8 @@ services:
     image: lasuite/impress-backend:latest
     user: ${DOCKER_USER:-1000}
     restart: always
-    ports:
-      - 8083:8083
     environment:
-      - DJANGO_CONFIGURATION=Production
+      - SERVICE_FQDN_BACKEND_8000
       # Common variables
       - DOCS_HOST=${DOCS_HOST}
       - S3_HOST=${S3_HOST}
@@ -98,6 +96,8 @@ services:
 
     env_file:
       - .env
+    networks:
+      - proxy-tier
     healthcheck:
       test: [ "CMD", "python", "manage.py", "check" ]
       interval: 15s
@@ -111,12 +111,11 @@ services:
       redis:
         condition: service_started
 
-  y-provider:
+  yprovider:
     image: lasuite/impress-y-provider:latest
     user: ${DOCKER_USER:-1000}
-    ports:
-      - 4444:4444
     environment:
+      - SERVICE_FQDN_YPROVIDER_4444
       - Y_PROVIDER_API_KEY=${Y_PROVIDER_API_KEY}
       - COLLABORATION_SERVER_SECRET=${COLLABORATION_SERVER_SECRET}
       - COLLABORATION_SERVER_ORIGIN=https://${DOCS_HOST}
@@ -125,29 +124,49 @@ services:
       - COLLABORATION_BACKEND_BASE_URL=https://${DOCS_HOST}
       - COLLABORATION_LOGGING=true
 
+  minio:
+    image: minio/minio
+    environment:
+    - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+    - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    - SERVICE_FQDN_MINIO_9009
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 1s
+      timeout: 20s
+      retries: 300
+    entrypoint: ""
+    command: minio server /data
+    volumes:
+    - ./data/minio:/data
+
   frontend:
     image: lasuite/impress-frontend:latest
     user: "101"
+    environment:
+      - SERVICE_FQDN_FRONTEND_3000
     env_file:
       - .env
-      # Uncomment and set your values if using our nginx proxy example
-    ports:
-      - 3003:3003
-    # - VIRTUAL_HOST=${DOCS_HOST} # used by nginx proxy
-    # - VIRTUAL_PORT=8083 # used by nginx proxy
-    # - LETSENCRYPT_HOST=${DOCS_HOST} # used by lets encrypt to generate TLS certificate
     volumes:
-      - ./default.conf.template:/etc/nginx/templates/default.conf.template
+      - ./etc/default.conf:/etc/nginx/templates/default.conf
     depends_on:
       backend:
-        condition: service_healthy
+        condition: 
+          service_healthy
+    networks:
+    - proxy-tier
 
-# Uncomment if using our nginx proxy example
-#    networks:
-#    - proxy-tier
-#    - default
+  nginxproxy:
+    image: nginxproxy/nginx-proxy
+    container_name: nginx-proxy
+    environment:
+      - SERVICE_FQDN_NGINXPROXY_80
+    volumes:
+      - html:/usr/share/nginx/html
+      - ./etc/default.conf:/etc/nginx/templates/default.conf
+    networks:
+      - proxy-tier
 
-# Uncomment if using our nginx proxy example
-#networks:
-#  proxy-tier:
-#    external: true
+networks:
+ proxy-tier:
+   external: true
