@@ -188,7 +188,7 @@ services:
       - SERVICE_FQDN_NGINXPROXY_80
     volumes:
       - html:/usr/share/nginx/html
-      - ./etc/default.conf:/etc/nginx/nginx.conf
+      - ./etc/default.conf:/etc/nginx/default.conf
       - /var/run/docker.sock:/tmp/docker.sock:ro
     # networks:
     #   - proxy-tier
