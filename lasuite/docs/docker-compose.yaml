@@ -186,6 +186,8 @@ services:
     container_name: nginx-proxy
     environment:
       - SERVICE_FQDN_NGINXPROXY_80
+    env_file:
+      - .env
     volumes:
       - html:/usr/share/nginx/html
       - ./etc/default.conf:/etc/nginx/default.conf
