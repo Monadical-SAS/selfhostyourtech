@@ -96,7 +96,9 @@ services:
       - OIDC_RP_CLIENT_ID=${OIDC_RP_CLIENT_ID}
       - OIDC_RP_CLIENT_SECRET=${OIDC_RP_CLIENT_SECRET}
       - OIDC_RP_SIGN_ALGO=RS256
-      - OIDC_RP_SCOPES="openid email profile"
+      - OIDC_RP_SCOPES=openid email profile
+      - OIDC_STORE_ID_TOKEN=True
+      - OIDC_STORE_ACCESS_TOKEN=True
       #USER_OIDC_FIELD_TO_SHORTNAME
       #USER_OIDC_FIELDS_TO_FULLNAME
 
