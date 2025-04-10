@@ -172,8 +172,6 @@ services:
     #   - SERVICE_FQDN_FRONTEND_3000
     env_file:
       - .env
-    volumes:
-      - ./etc/default.conf:/etc/nginx/templates/default.conf
     depends_on:
       backend:
         condition: 
