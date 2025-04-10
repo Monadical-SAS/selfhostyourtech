@@ -1,9 +1,9 @@
 upstream docs_backend {
-    server ${BACKEND_HOST}:8000 fail_timeout=0;
+    server backend:8000 fail_timeout=0;
 }
 
 upstream docs_frontend {
-    server ${FRONTEND_HOST}:3000 fail_timeout=0;
+    server frontend:3000 fail_timeout=0;
 }
 
 server {
@@ -96,8 +96,8 @@ server {
         proxy_set_header X-Amz-Content-SHA256 $authContentSha256;
 
         # Get resource from Minio
-        proxy_pass https://${S3_HOST}/${BUCKET_NAME}/;
-        proxy_set_header Host ${S3_HOST};  
+        proxy_pass https://storage.app.monadical.io/docs-media-storage/;
+        proxy_set_header Host storage.app.monadical.io;  
 
         add_header Content-Security-Policy "default-src 'none'" always;
     }
