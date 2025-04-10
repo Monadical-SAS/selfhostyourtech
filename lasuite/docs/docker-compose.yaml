@@ -190,7 +190,7 @@ services:
       - .env
     volumes:
       - html:/usr/share/nginx/html
-      - ./etc/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./etc/nginx/templates:/etc/nginx/templates
       - /var/run/docker.sock:/tmp/docker.sock:ro
     # networks:
     #   - proxy-tier
