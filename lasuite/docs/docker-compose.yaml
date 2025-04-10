@@ -2,7 +2,7 @@ services:
   postgresql:
     image: postgres:16
     healthcheck:
-      test: [ "CMD", "pg_isready", "-q", "-U", "docs", "-d", "docs" ]
+      test: ["CMD", "pg_isready", "-q", "-U", "docs", "-d", "docs"]
       interval: 1s
       timeout: 2s
       retries: 300
@@ -22,7 +22,7 @@ services:
     image: redis:5
     restart: always
     volumes:
-      - 'redis-data:/data'
+      - "redis-data:/data"
     healthcheck:
       test:
         - CMD
@@ -120,7 +120,7 @@ services:
     # networks:
     #   - proxy-tier
     healthcheck:
-      test: [ "CMD", "python", "manage.py", "check" ]
+      test: ["CMD", "python", "manage.py", "check"]
       interval: 15s
       timeout: 30s
       retries: 20
@@ -150,10 +150,10 @@ services:
     env_file:
       - .env
     environment:
-    - MINIO_ROOT_USER=${MINIO_ROOT_USER}
-    - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-    - MINIO_BROWSER_REDIRECT_URL=https://ui.${MINIO_HOST}
-    - SERVICE_FQDN_MINIO_9000
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_BROWSER_REDIRECT_URL=https://ui.${MINIO_HOST}
+      - SERVICE_FQDN_MINIO_9000
     # - SERVICE_FQDN_MINIO_9001
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
@@ -163,7 +163,7 @@ services:
     entrypoint: ""
     command: minio server /data
     volumes:
-    - ./data/minio:/data
+      - ./data/minio:/data
 
   frontend:
     image: lasuite/impress-frontend:latest
@@ -174,25 +174,22 @@ services:
       - .env
     depends_on:
       backend:
-        condition: 
-          service_healthy
+        condition: service_healthy
     # networks:
     # - proxy-tier
 
-  nginxproxy:
-    image: nginxproxy/nginx-proxy
-    container_name: nginx-proxy
+  nginx:
+    image: nginx
     environment:
-      - SERVICE_FQDN_NGINXPROXY_80
+      - SERVICE_FQDN_NGINX_80
     env_file:
       - .env
     volumes:
       - html:/usr/share/nginx/html
       - ./etc/nginx:/etc/nginx/conf.d
-      - /var/run/docker.sock:/tmp/docker.sock:ro
+    # - /var/run/docker.sock:/tmp/docker.sock:ro
     # networks:
     #   - proxy-tier
-
 # networks:
 #  proxy-tier:
 #    external: true
