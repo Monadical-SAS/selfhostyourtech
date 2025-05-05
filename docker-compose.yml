@@ -1,0 +1,19 @@
+services:
+  manager:
+    build: 
+      context: .
+      dockerfile: Dockerfile.manager
+      args:
+        - SELFHOSTYOURTECH_ROOT_ARG=${PWD}
+    environment:
+      - SELFHOSTYOURTECH_ROOT=${PWD}
+    volumes:
+      - ./apps:${PWD}/apps
+      - ./bin:${PWD}/bin
+      - ./etc/:${PWD}/etc/
+      - ./tools:${PWD}/tools
+      - ./etc/supervisor:/etc/supervisor
+      - ./data/logs/supervisor:/var/log/supervisor
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
+    command: shtool run
