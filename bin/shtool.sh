@@ -161,6 +161,7 @@ create_traefik_public_network() {
 function run #description 'Run the docker compose stack'
 {   
     create_traefik_public_network
+
     IFS=$'\n\t'        # Safer word splitting
     DEBUG="false"
 
@@ -206,6 +207,49 @@ function run #description 'Run the docker compose stack'
         wait  # Keep script running to stream logs
     fi
 
+}
+
+function install_docker #description 'Install docker'
+{
+    # Remove any conflicting packages
+    echo "Removing any conflicting packages..."
+    for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do
+        sudo apt-get remove -y $pkg > /dev/null 2>&1 || true
+    done
+    
+    # Update package index and install prerequisites
+    echo "Updating package index and installing prerequisites..."
+    sudo apt-get update -y
+    sudo apt-get install -y ca-certificates curl
+    
+    # Set up Docker's apt repository
+    echo "Setting up Docker repository..."
+    sudo install -m 0755 -d /etc/apt/keyrings
+    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
+    
+    # Add the repository to Apt sources
+    echo "Adding Docker repository to apt sources..."
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+      $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+      sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    
+    # Update package index again
+    echo "Updating package index with Docker repository..."
+    sudo apt-get update -y
+    
+    # Install Docker packages
+    echo "Installing Docker packages..."
+    sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    
+    # Verify installation
+    echo "Verifying Docker installation..."
+    if sudo docker run --rm hello-world > /dev/null 2>&1; then
+        echo "Docker has been successfully installed!"
+    else
+        echo "Docker installation may have issues. Please check the system logs."
+    fi
 }
 
 function manage #description 'Manage stacks one by one'
