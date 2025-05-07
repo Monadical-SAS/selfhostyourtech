@@ -13,6 +13,95 @@ tail_logs() {
     docker compose logs -f --no-color 2>&1 | sed "s/^/[$app] /"
 }
 
+function setup_letsencrypt #description 'Set up Lets Encrypt certificates for Traefik'
+{
+    # Check if domain and email are provided
+    if [ $# -lt 2 ]; then
+        echo "Usage: $0 setup_letsencrypt <domain> <email> [username] [password]"
+        echo "Example: $0 setup_letsencrypt yourdomain.com admin@yourdomain.com admin securepassword"
+        return 1
+    fi
+
+    DOMAIN=$1
+    EMAIL=$2
+    USERNAME=${3:-admin}
+    PASSWORD=${4:-$(openssl rand -base64 12)}
+    
+    # Define paths based on the project structure
+    TRAEFIK_DIR="$SELFHOSTYOURTECH_ROOT/apps/traefik"
+    LETSENCRYPT_DIR="$TRAEFIK_DIR/letsencrypt"
+    LOGS_DIR="$TRAEFIK_DIR/logs"
+    DOCKER_COMPOSE_PATH="$TRAEFIK_DIR/docker-compose.yml"
+    
+    # Create necessary directories
+    mkdir -p "$LETSENCRYPT_DIR"
+    mkdir -p "$LOGS_DIR"
+    touch "$LOGS_DIR/access.log"
+    
+    # Set proper permissions
+    chmod 600 "$LETSENCRYPT_DIR"
+    chmod 600 "$LOGS_DIR/access.log"
+    
+    # Create .env file with configuration
+    cat > "$TRAEFIK_DIR/.env" << EOF
+TRAEFIK_HOST=${DOMAIN}
+TRAEFIK_USER_AUTH=$(htpasswd -nb ${USERNAME} ${PASSWORD} | sed -e s/\\$/\\$\\$/g)
+EOF
+    
+    echo "Created .env file with the following settings:"
+    echo "TRAEFIK_HOST: ${DOMAIN}"
+    echo "Username: ${USERNAME}"
+    echo "Password: (generated securely)"
+    
+    # Create or ensure the existence of the network
+    docker network create traefik-public 2>/dev/null || true
+    echo "Ensured 'traefik-public' network exists"
+    
+    # Check if acme.json exists, if not create it with proper permissions
+    if [ ! -f "$LETSENCRYPT_DIR/acme.json" ]; then
+        touch "$LETSENCRYPT_DIR/acme.json"
+        chmod 600 "$LETSENCRYPT_DIR/acme.json"
+        echo "Created acme.json file with proper permissions"
+    fi
+    
+    # Update the docker-compose.yml with the correct email if it exists
+    if [ -f "$DOCKER_COMPOSE_PATH" ]; then
+        sed -i "s|--certificatesresolvers.letsencrypt.acme.email=.*|--certificatesresolvers.letsencrypt.acme.email=${EMAIL}|" "$DOCKER_COMPOSE_PATH"
+        echo "Updated docker-compose.yml with your email: ${EMAIL}"
+    else
+        echo "Warning: docker-compose.yml not found at $DOCKER_COMPOSE_PATH"
+        echo "You'll need to manually update your email address in the Traefik configuration."
+    fi
+    
+    cat << EOL
+
+=======================================================
+Let's Encrypt setup complete! Next steps:
+
+1. Start or restart your Traefik service:
+   $0 manage traefik up -d
+
+2. Check logs to verify certificate issuance:
+   $0 manage traefik logs -f
+
+3. Access your Traefik dashboard at:
+   https://${DOMAIN}
+
+   Login with:
+   - Username: ${USERNAME}
+   - Password: ${PASSWORD}
+
+4. Your certificates will be stored in:
+   $LETSENCRYPT_DIR/acme.json
+
+Note: The first time you access a domain, Traefik will
+automatically request a certificate from Let's Encrypt.
+=======================================================
+
+EOL
+
+}
+
 function run #description 'Run the docker compose stack'
 {
     IFS=$'\n\t'        # Safer word splitting
