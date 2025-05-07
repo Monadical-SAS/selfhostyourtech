@@ -6,6 +6,8 @@ services:
     # https://github.com/zulip/zulip/blob/main/Dockerfile-postgresql
     # https://hub.docker.com/r/zulip/zulip-postgresql/tags
     image: 'zulip/zulip-postgresql:14'
+    env_file:
+     - ./.env
     expose:
       - 5432
     environment:
@@ -24,6 +26,8 @@ services:
   redis:
     # https://hub.docker.com/_/redis/tags
     image: 'redis:alpine'
+    env_file:
+     - ./.env
     command: /bin/sh -c 'redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}'
     expose:
       - 6379
@@ -38,6 +42,8 @@ services:
   memcached:
     # https://hub.docker.com/_/memcached/tags
     image: 'memcached:alpine'
+    env_file:
+     - ./.env
     command:
       - 'sh'
       - '-euc'
@@ -61,6 +67,8 @@ services:
   rabbitmq:
     # https://hub.docker.com/_/rabbitmq/tags
     image: 'rabbitmq:3-alpine'
+    env_file:
+     - ./.env
     expose:
       - 5672
     environment:
@@ -78,9 +86,12 @@ services:
     # https://github.com/zulip/docker-zulip#configuration
     # https://hub.docker.com/r/zulip/docker-zulip/tags
     image: 'zulip/docker-zulip:9.3-0'
+    env_file:
+     - ./.shared-env
+     - ./.env
     environment:
       # Zulip settings
-      SETTING_EXTERNAL_HOST: zulip.selfhostyour.tech
+      SETTING_EXTERNAL_HOST: zulip.${BASE_DOMAIN}
       DISABLE_HTTPS: 'True'
       SETTING_ALLOWED_HOSTS: "['*']"
       # Proxy settings (for Traefik)
@@ -148,10 +159,10 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik-public
-      - traefik.http.routers.zulip.rule=Host(`${ZULIP_HOST}`)
+      - traefik.http.routers.zulip.rule=Host(`zulip.${BASE_DOMAIN}`)
       - traefik.http.routers.zulip.entrypoints=web
       - traefik.http.routers.zulip.middlewares=redirect-to-https
-      - traefik.http.routers.zulip-secure.rule=Host(`${ZULIP_HOST}`)
+      - traefik.http.routers.zulip-secure.rule=Host(`zulip.${BASE_DOMAIN}`)
       - traefik.http.routers.zulip-secure.entrypoints=websecure
       - traefik.http.routers.zulip-secure.tls=true
       - traefik.http.routers.zulip-secure.tls.certresolver=letsencrypt

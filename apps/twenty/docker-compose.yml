@@ -17,6 +17,9 @@ services:
 
   server:
     image: twentycrm/twenty:${TAG:-latest}
+    env_file:
+     - ./.shared-env
+     - ./.env
     volumes:
       - server-local-data:/app/packages/twenty-server/.local-storage
       - docker-data:/app/docker-data

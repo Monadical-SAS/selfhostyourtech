@@ -6,6 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
+     - ./.shared-env
+     - ./.env
     networks:
       - traefik-public
     labels:
@@ -13,7 +15,7 @@ services:
       - traefik.docker.network=traefik-public
       - traefik.constraint-label=traefik-public
       # Main domain route
-      - traefik.http.routers.docs.rule=Host(`${DOCS_SUBDOMAIN}`) || Host(`www.${DOCS_SUBDOMAIN}`)
+      - traefik.http.routers.docs.rule=Host(`${BASE_DOMAIN}`) || Host(`www.${BASE_DOMAIN}`)
       - traefik.http.routers.docs.entrypoints=websecure
       - traefik.http.routers.docs.tls=true
       - traefik.http.routers.docs.tls.certresolver=letsencrypt

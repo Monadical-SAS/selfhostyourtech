@@ -117,6 +117,10 @@ DOMAIN=${DOMAIN}
 BASE_DOMAIN=${BASE_DOMAIN}
 EMAIL=${EMAIL}
 EOF
+
+    cat > "$SELFHOSTYOURTECH_ROOT/.shared-env" << EOF
+BASE_DOMAIN=${BASE_DOMAIN}
+EOF
     
     echo "Created .env file with the following settings:"
     echo "TRAEFIK_HOST: ${DOMAIN}"
@@ -160,6 +164,14 @@ function run #description 'Run the docker compose stack'
     IFS=$'\n\t'        # Safer word splitting
     DEBUG="false"
 
+    if [[ -f "$SELFHOSTYOURTECH_ROOT/.shared-env" ]]; then
+        echo "✅ Shared env exists."
+    else
+        echo "❌ Shared env file should be created first".
+        echo "Run first: shtool setup_letsencrypt"
+        exit 1
+    fi
+
     echo "Starting apps from managed-apps..."
 
     APP_LIST=$(sed -n '/^apps:/,/^[^ ]/p' "$APPS_ENABLED_FILE" | grep '-' | sed -e 's/- //' -e 's/^[ \t]*//' -e 's/[ \t]*$//')
@@ -175,6 +187,8 @@ function run #description 'Run the docker compose stack'
             echo "❌ Directory '$app' not found. Skipping."
             exit 1
         fi
+
+        cp -p "$SELFHOSTYOURTECH_ROOT/.shared-env" "$APP_DIR"
 
         (cd "$APP_DIR" && docker compose up -d) || {
             echo "❌ Failed to deploy $app."

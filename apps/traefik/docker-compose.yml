@@ -3,6 +3,9 @@ services:
   traefik:
     # Use the latest v3.1.x Traefik image available
     image: traefik:v3.1
+    env_file:
+     - ./.shared-env
+     - ./.env
     ports:
       # Listen on port 80, default for HTTP, necessary to redirect to HTTPS
       - "80:80"
@@ -47,7 +50,7 @@ services:
       - "traefik.http.routers.acme.priority=100"
       - "traefik.http.routers.acme.service=api@internal"
       # Dashboard configuration
-      - "traefik.http.routers.dashboard.rule=Host(`${TRAEFIK_HOST}`)"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.${BASE_DOMAIN}`)"
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.entrypoints=websecure"
       - "traefik.http.routers.dashboard.tls=true"

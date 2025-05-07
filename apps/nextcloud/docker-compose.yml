@@ -1,6 +1,9 @@
 services:
   nextcloud:
     image: nextcloud:apache
+    env_file:
+     - ./.shared-env
+     - ./.env
     restart: always
     volumes:
       - nextcloud_data:/var/www/html
@@ -10,8 +13,8 @@ services:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - REDIS_HOST=redis
-      - APACHE_SERVER_NAME=${NEXTCLOUD_HOST}
-      - NEXTCLOUD_TRUSTED_DOMAINS=${NEXTCLOUD_HOST}
+      - APACHE_SERVER_NAME=nextcloud.${BASE_DOMAIN}
+      - NEXTCLOUD_TRUSTED_DOMAINS=nextcloud.${BASE_DOMAIN}
       - TRUSTED_PROXIES=${TRUSTED_PROXIES}
     depends_on:
       - db
@@ -22,10 +25,10 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik-public
-      - traefik.http.routers.nextcloud.rule=Host(`${NEXTCLOUD_HOST}`)
+      - traefik.http.routers.nextcloud.rule=Host(`nextcloud.${BASE_DOMAIN}`)
       - traefik.http.routers.nextcloud.entrypoints=web
       - traefik.http.routers.nextcloud.middlewares=redirect-to-https
-      - traefik.http.routers.nextcloud-secure.rule=Host(`${NEXTCLOUD_HOST}`)
+      - traefik.http.routers.nextcloud-secure.rule=Host(`nextcloud.${BASE_DOMAIN}`)
       - traefik.http.routers.nextcloud-secure.entrypoints=websecure
       - traefik.http.routers.nextcloud-secure.tls=true
       - traefik.http.routers.nextcloud-secure.tls.certresolver=letsencrypt

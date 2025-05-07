@@ -4,6 +4,7 @@ services:
     environment:
       BASEROW_PUBLIC_URL: 'https://${BASEROW_HOST}'
     env_file:
+      - ./.shared-env
       - ./.env
     networks:
       - internal
@@ -13,10 +14,10 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik-public
-      - traefik.http.routers.baserow.rule=Host(`${BASEROW_HOST}`)
+      - traefik.http.routers.baserow.rule=Host(`baserow.${BASE_DOMAIN}`)
       - traefik.http.routers.baserow.entrypoints=web
       - traefik.http.routers.baserow.middlewares=redirect-to-https
-      - traefik.http.routers.baserow-secure.rule=Host(`${BASEROW_HOST}`)
+      - traefik.http.routers.baserow-secure.rule=Host(`baserow.${BASE_DOMAIN}`)
       - traefik.http.routers.baserow-secure.entrypoints=websecure
       - traefik.http.routers.baserow-secure.tls=true
       - traefik.http.routers.baserow-secure.tls.certresolver=letsencrypt

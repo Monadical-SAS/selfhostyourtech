@@ -1,6 +1,9 @@
 services:
   onlyoffice:
     image: onlyoffice/documentserver
+    env_file:
+     - ./.shared-env
+     - ./.env
     restart: always
     volumes:
       - document_data:/var/www/onlyoffice/Data
@@ -27,10 +30,10 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik-public
-      - traefik.http.routers.onlyoffice.rule=Host(`${ONLYOFFICE_HOST}`)
+      - traefik.http.routers.onlyoffice.rule=Host(`onlyoffice.${BASE_DOMAIN}`)
       - traefik.http.routers.onlyoffice.entrypoints=web
       - traefik.http.routers.onlyoffice.middlewares=redirect-to-https
-      - traefik.http.routers.onlyoffice-secure.rule=Host(`${ONLYOFFICE_HOST}`)
+      - traefik.http.routers.onlyoffice-secure.rule=Host(`onlyoffice.${BASE_DOMAIN}`)
       - traefik.http.routers.onlyoffice-secure.entrypoints=websecure
       - traefik.http.routers.onlyoffice-secure.tls=true
       - traefik.http.routers.onlyoffice-secure.tls.certresolver=letsencrypt

@@ -5,6 +5,7 @@ services:
     volumes:
       - ./data/postgresql:/var/lib/postgresql/data
     env_file:
+     - ./.shared-env
      - ./.env
     environment:
       POSTGRES_PASSWORD: ${PG_PASS}
@@ -30,6 +31,7 @@ services:
       - 9443:9443
     command: server
     env_file:
+     - ./.shared-env
      - ./.env
     environment:
       AUTHENTIK_REDIS__HOST: redis
@@ -60,17 +62,17 @@ services:
       # Define the service explicitly
       - traefik.http.services.authentik.loadbalancer.server.port=9000
       # HTTP router
-      - traefik.http.routers.authentik.rule=Host(`${AUTHENTIK_HOST}`)
+      - traefik.http.routers.authentik.rule=Host(`authentik.${BASE_DOMAIN}`)
       - traefik.http.routers.authentik.entrypoints=web
       - traefik.http.routers.authentik.middlewares=redirect-to-https
       # HTTPS router
-      - traefik.http.routers.authentik-secure.rule=Host(`${AUTHENTIK_HOST}`)
+      - traefik.http.routers.authentik-secure.rule=Host(`authentik.${BASE_DOMAIN}`)
       - traefik.http.routers.authentik-secure.entrypoints=websecure
       - traefik.http.routers.authentik-secure.tls=true
       - traefik.http.routers.authentik-secure.tls.certresolver=letsencrypt
       - traefik.http.routers.authentik-secure.service=authentik
       # Outpost endpoints
-      - traefik.http.routers.authentik-outpost.rule=HostRegexp(`{subdomain:[a-zA-Z0-9-]+}.${AUTHENTIK_SUBDOMAIN}`) && PathPrefix(`/outpost.goauthentik.io/`)
+      - traefik.http.routers.authentik-outpost.rule=HostRegexp(`{subdomain:[a-zA-Z0-9-]+}.${BASE_DOMAIN}`) && PathPrefix(`/outpost.goauthentik.io/`)
       - traefik.http.routers.authentik-outpost.entrypoints=websecure
       - traefik.http.routers.authentik-outpost.tls=true
       - traefik.http.routers.authentik-outpost.tls.certresolver=letsencrypt
@@ -83,6 +85,7 @@ services:
       - traefik.http.middlewares.authentik.forwardauth.authResponseHeaders=X-authentik-username,X-authentik-groups,X-authentik-email,X-authentik-name,X-authentik-uid,X-authentik-jwt,X-authentik-meta-jwks,X-authentik-meta-outpost,X-authentik-meta-provider,X-authentik-meta-app,X-authentik-meta-version
   worker:
     env_file:
+     - ./.shared-env
      - ./.env
     image: ghcr.io/goauthentik/server
     restart: always
