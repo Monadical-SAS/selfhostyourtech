@@ -13,6 +13,10 @@ tail_logs() {
     docker compose logs -f --no-color 2>&1 | sed "s/^/[$app] /"
 }
 
+extract_domain() {
+    echo "$1" | sed -E 's/.*\.([^.]+\.[^.]+)$/\1/'
+}
+
 function install_apache_utils #description 'Install apache2-utils for htpasswd command'
 {
     echo "Checking for apache2-utils..."
@@ -103,12 +107,15 @@ function setup_letsencrypt #description 'Set up Lets Encrypt certificates for Tr
     # Set proper permissions
     chmod 600 "$LETSENCRYPT_DIR"
     chmod 600 "$LOGS_DIR/access.log"
+
+    BASE_DOMAIN=$(extract_domain "${DOMAIN}")
     
     # Create .env file with configuration
     cat > "$TRAEFIK_DIR/.env" << EOF
 TRAEFIK_HOST=${DOMAIN}
 TRAEFIK_USER_AUTH=$(htpasswd -nb ${USERNAME} ${PASSWORD} | sed -e s/\\$/\\$\\$/g)
 DOMAIN=${DOMAIN}
+BASE_DOMAIN=${BASE_DOMAIN}
 EMAIL=${EMAIL}
 EOF
     
