@@ -52,7 +52,7 @@ services:
       - postgresql
       - redis
     networks:
-      #- traefik-public
+      - traefik-public
       - authentik-internal
     labels:
       - traefik.enable=true
