@@ -13,6 +13,62 @@ tail_logs() {
     docker compose logs -f --no-color 2>&1 | sed "s/^/[$app] /"
 }
 
+function install_apache_utils #description 'Install apache2-utils for htpasswd command'
+{
+    echo "Checking for apache2-utils..."
+    
+    # Check if htpasswd is already installed
+    if command -v htpasswd &> /dev/null; then
+        echo "✅ htpasswd is already installed."
+        return 0
+    fi
+    
+    # Detect the Linux distribution
+    if [ -f /etc/os-release ]; then
+        . /etc/os-release
+        OS=$ID
+    elif type lsb_release >/dev/null 2>&1; then
+        OS=$(lsb_release -si | tr '[:upper:]' '[:lower:]')
+    else
+        echo "❌ Cannot detect OS distribution. Please install apache2-utils manually."
+        return 1
+    fi
+    
+    # Install based on the detected OS
+    case "$OS" in
+        ubuntu|debian|raspbian|pop|mint|kali)
+            echo "Installing apache2-utils on $OS..."
+            sudo apt-get update && sudo apt-get install -y apache2-utils
+            ;;
+        fedora|rhel|centos|rocky|almalinux)
+            echo "Installing httpd-tools on $OS..."
+            sudo dnf install -y httpd-tools
+            ;;
+        arch|manjaro|endeavouros)
+            echo "Installing apache on $OS..."
+            sudo pacman -Sy --noconfirm apache
+            ;;
+        alpine)
+            echo "Installing apache2-utils on $OS..."
+            sudo apk add apache2-utils
+            ;;
+        *)
+            echo "❌ Unsupported distribution: $OS"
+            echo "Please install apache2-utils or equivalent package manually."
+            return 1
+            ;;
+    esac
+    
+    # Verify installation
+    if command -v htpasswd &> /dev/null; then
+        echo "✅ apache2-utils successfully installed."
+        return 0
+    else
+        echo "❌ Failed to install apache2-utils. Please install it manually."
+        return 1
+    fi
+}
+
 function setup_letsencrypt #description 'Set up Lets Encrypt certificates for Traefik'
 {
     # Check if domain and email are provided
@@ -21,6 +77,12 @@ function setup_letsencrypt #description 'Set up Lets Encrypt certificates for Tr
         echo "Example: $0 setup_letsencrypt yourdomain.com admin@yourdomain.com admin securepassword"
         return 1
     fi
+
+    install_apache_utils || {
+        echo "❌ htpasswd is required for setting up authentication."
+        echo "Please install apache2-utils manually and try again."
+        return 1
+    }
 
     DOMAIN=$1
     EMAIL=$2
@@ -46,6 +108,8 @@ function setup_letsencrypt #description 'Set up Lets Encrypt certificates for Tr
     cat > "$TRAEFIK_DIR/.env" << EOF
 TRAEFIK_HOST=${DOMAIN}
 TRAEFIK_USER_AUTH=$(htpasswd -nb ${USERNAME} ${PASSWORD} | sed -e s/\\$/\\$\\$/g)
+DOMAIN=${DOMAIN}
+EMAIL=${EMAIL}
 EOF
     
     echo "Created .env file with the following settings:"
@@ -64,39 +128,7 @@ EOF
         echo "Created acme.json file with proper permissions"
     fi
     
-    # Update the docker-compose.yml with the correct email if it exists
-    if [ -f "$DOCKER_COMPOSE_PATH" ]; then
-        sed -i "s|--certificatesresolvers.letsencrypt.acme.email=.*|--certificatesresolvers.letsencrypt.acme.email=${EMAIL}|" "$DOCKER_COMPOSE_PATH"
-        echo "Updated docker-compose.yml with your email: ${EMAIL}"
-    else
-        echo "Warning: docker-compose.yml not found at $DOCKER_COMPOSE_PATH"
-        echo "You'll need to manually update your email address in the Traefik configuration."
-    fi
-    
     cat << EOL
-
-=======================================================
-Let's Encrypt setup complete! Next steps:
-
-1. Start or restart your Traefik service:
-   $0 manage traefik up -d
-
-2. Check logs to verify certificate issuance:
-   $0 manage traefik logs -f
-
-3. Access your Traefik dashboard at:
-   https://${DOMAIN}
-
-   Login with:
-   - Username: ${USERNAME}
-   - Password: ${PASSWORD}
-
-4. Your certificates will be stored in:
-   $LETSENCRYPT_DIR/acme.json
-
-Note: The first time you access a domain, Traefik will
-automatically request a certificate from Let's Encrypt.
-=======================================================
 
 EOL
 }
