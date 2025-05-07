@@ -103,11 +103,11 @@ services:
       - postgresql
       - redis
     networks:
-      #- traefik-public
+      - traefik-public
       - authentik-internal
 
 networks:
-  #traefik-public:
-  #  external: true
+  traefik-public:
+    external: true
   authentik-internal:
     internal: true
