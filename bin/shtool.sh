@@ -97,7 +97,6 @@ function setup_letsencrypt #description 'Set up Lets Encrypt certificates for Tr
     TRAEFIK_DIR="$SELFHOSTYOURTECH_ROOT/apps/traefik"
     LETSENCRYPT_DIR="$TRAEFIK_DIR/letsencrypt"
     LOGS_DIR="$TRAEFIK_DIR/logs"
-    DOCKER_COMPOSE_PATH="$TRAEFIK_DIR/docker-compose.yml"
     
     # Create necessary directories
     mkdir -p "$LETSENCRYPT_DIR"
