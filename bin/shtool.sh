@@ -99,11 +99,26 @@ automatically request a certificate from Let's Encrypt.
 =======================================================
 
 EOL
+}
 
+create_traefik_public_network() {
+    echo "Creating traefik public network..."
+    
+    # Check if network already exists
+    if docker network ls | grep -q "traefik-public"; then
+        echo "Network traefik-public already exists."
+        return 0
+    fi
+    
+    # Create the network with specific options
+    docker network create --attachable traefik-public
+        
+    echo "Network traefik-public created successfully."
 }
 
 function run #description 'Run the docker compose stack'
-{
+{   
+    create_traefik_public_network
     IFS=$'\n\t'        # Safer word splitting
     DEBUG="false"
 
