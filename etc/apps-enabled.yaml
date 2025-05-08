@@ -3,3 +3,4 @@ apps:
   - authentik
   - zulip
   - onlyoffice
+  - baserow
