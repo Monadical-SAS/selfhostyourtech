@@ -2,3 +2,4 @@ apps:
   - traefik
   - authentik
   - zulip
+  - nextcloud

@@ -2,7 +2,6 @@ services:
   nextcloud:
     image: nextcloud:apache
     env_file:
-     - ./.shared-env
      - ./.env
     restart: always
     volumes:
