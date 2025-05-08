@@ -189,7 +189,7 @@ function run #description 'Run the docker compose stack'
             exit 1
         fi
 
-        cp -p "$SELFHOSTYOURTECH_ROOT/.shared-env" "$APP_DIR"
+        cp -fv "$SELFHOSTYOURTECH_ROOT/.shared-env" "$APP_DIR"
 
         (cd "$APP_DIR" && docker compose up -d) || {
             echo "❌ Failed to deploy $app."
