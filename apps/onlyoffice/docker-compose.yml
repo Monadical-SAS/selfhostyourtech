@@ -2,7 +2,6 @@ services:
   onlyoffice:
     image: onlyoffice/documentserver
     env_file:
-     - ./.shared-env
      - ./.env
     restart: always
     volumes:
