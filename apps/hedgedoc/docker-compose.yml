@@ -19,7 +19,7 @@ services:
      - ./.env
     environment:
       - CMD_DB_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@hedgedoc_database:5432/${POSTGRES_DB}
-      - CMD_DOMAIN=${BASE_DOMAIN}
+      - CMD_DOMAIN=hedgedoc.${BASE_DOMAIN}
       - CMD_PROTOCOL_USESSL=true
       - CMD_URL_ADDPORT=false
       - CMD_SESSION_SECRET=${HD_SESSION_SECRET}
