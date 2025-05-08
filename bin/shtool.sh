@@ -17,6 +17,21 @@ extract_domain() {
     echo "$1" | sed -E 's/.*\.([^.]+\.[^.]+)$/\1/'
 }
 
+add_key_in_env() {
+    local KEY=$1
+    local VALUE=$2
+    local ENV_FILE=$3
+    if grep -q "^${KEY}=" "$ENV_FILE"; then
+        # Key exists, update it
+        sed -i "s|^${KEY}=.*|${KEY}=${VALUE}|" "$ENV_FILE"
+        echo "Updated $KEY in $ENV_FILE"
+    else
+        # Key doesn't exist, append it
+        echo "${KEY}=${VALUE}" >> "$ENV_FILE"
+        echo "Added $KEY to $ENV_FILE"
+    fi
+}
+
 function install_apache_utils #description 'Install apache2-utils for htpasswd command'
 {
     echo "Checking for apache2-utils..."
@@ -118,7 +133,7 @@ BASE_DOMAIN=${BASE_DOMAIN}
 EMAIL=${EMAIL}
 EOF
 
-    cat > "$SELFHOSTYOURTECH_ROOT/.shared-env" << EOF
+    cat > "$SELFHOSTYOURTECH_ROOT/basedomain.txt" << EOF
 BASE_DOMAIN=${BASE_DOMAIN}
 EOF
     
@@ -165,10 +180,10 @@ function run #description 'Run the docker compose stack'
     IFS=$'\n\t'        # Safer word splitting
     DEBUG="false"
 
-    if [[ -f "$SELFHOSTYOURTECH_ROOT/.shared-env" ]]; then
-        echo "✅ Shared env exists."
+    if [[ -f "$SELFHOSTYOURTECH_ROOT/basedomain.txt" ]]; then
+        echo "✅ Base Domain file exists."
     else
-        echo "❌ Shared env file should be created first".
+        echo "❌ Base Domain file should be created first".
         echo "Run first: shtool setup_letsencrypt"
         exit 1
     fi
@@ -189,7 +204,9 @@ function run #description 'Run the docker compose stack'
             exit 1
         fi
 
-        cp -fv "$SELFHOSTYOURTECH_ROOT/.shared-env" "$APP_DIR"
+        BASE_DOMAIN_VALUE=$(cat "$SELFHOSTYOURTECH_ROOT/basedomain.txt")
+
+        add_key_in_env "BASE_DOMAIN" "$BASE_DOMAIN_VALUE" "$APP_DIR/.env"
 
         (cd "$APP_DIR" && docker compose up -d) || {
             echo "❌ Failed to deploy $app."
