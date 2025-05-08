@@ -3,7 +3,6 @@ services:
   hedgedoc_database:
     image: postgres:13.4-alpine
     env_file:
-     - ./.shared-env
      - ./.env
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
@@ -18,7 +17,6 @@ services:
     # Make sure to use the latest release from https://hedgedoc.org/latest-release
     image: quay.io/hedgedoc/hedgedoc:1.10.0
     env_file:
-     - ./.shared-env
      - ./.env
     environment:
       - CMD_DB_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@hedgedoc_database:5432/${POSTGRES_DB}
