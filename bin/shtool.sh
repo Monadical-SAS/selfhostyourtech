@@ -6,6 +6,8 @@ SCRIPTS_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SELFHOSTYOURTECH_ROOT="$( dirname "$SCRIPTS_ROOT")"
 APPS_ENABLED_FILE="$SELFHOSTYOURTECH_ROOT"/etc/apps-enabled.yaml
 
+source "$SCRIPTS_ROOT/tools.sh"
+
 tail_logs() {
     local app="$1"
     local APP_DIR="$SELFHOSTYOURTECH_ROOT/apps/$app"
@@ -275,4 +277,15 @@ function manage #description 'Manage stacks one by one'
     cd "$SELFHOSTYOURTECH_ROOT"/apps/"$1"
     shift
     docker compose $@
+}
+
+function run_app_settings #description 'Run specific app scripts'
+{
+    APP_LIST=$(sed -n '/^apps:/,/^[^ ]/p' "$APPS_ENABLED_FILE" | grep '-' | sed -e 's/- //' -e 's/^[ \t]*//' -e 's/[ \t]*$//')
+
+    # Deploy apps
+    for app in $APP_LIST; do
+        APP_DIR="$SELFHOSTYOURTECH_ROOT/apps/$app"
+        run_app_hook "$APP_DIR"
+    done
 }

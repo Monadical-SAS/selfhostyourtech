@@ -1,0 +1,70 @@
+#!/bin/bash
+
+update_env_record() {
+    local key="$1"
+    local value="$2"
+    local env_file="$3"
+    
+    # Check if all required parameters are provided
+    if [[ -z "$key" || -z "$env_file" ]]; then
+        echo "Error: Missing required parameters. Usage: update_env_record KEY VALUE ENV_FILE_PATH"
+        return 1
+    fi
+    
+    # Check if the .env file exists
+    if [[ ! -f "$env_file" ]]; then
+        echo "Error: .env file does not exist at path: $env_file"
+        return 1
+    fi
+    
+    # Check if value is empty
+    if [[ -z "$value" ]]; then
+        echo "Value is empty. No update performed for key: $key"
+        return 0
+    fi
+    
+    # Check if the key exists in the file
+    if grep -q "^${key}=" "$env_file"; then
+        # Update existing key
+        sed -i "s|^${key}=.*|${key}=${value}|" "$env_file"
+        echo "Updated key '$key' with value '$value' in $env_file"
+    else
+        # Add new key
+        echo "${key}=${value}" >> "$env_file"
+        echo "Added new key '$key' with value '$value' to $env_file"
+    fi
+    
+    return 0
+}
+
+
+run_app_hook() {
+    local directory_path="$1"
+    
+    # Check if directory path is provided
+    if [[ -z "$directory_path" ]]; then
+        echo "Error: Directory path is required. Usage: run_app_hook DIRECTORY_PATH"
+        return 1
+    fi
+    
+    # Check if the directory exists
+    if [[ ! -d "$directory_path" ]]; then
+        echo "Error: Directory does not exist at path: $directory_path"
+        return 1
+    fi
+    
+    # Path to the script
+    local script_path="${directory_path}/app_hook.sh"
+    
+    # Check if the script exists
+    if [[ -f "$script_path" ]]; then
+        # Check if the script is executable
+        if [[ -x "$script_path" ]]; then
+            echo "Running app_hook.sh script in $directory_path..."
+            "$script_path"
+            return $?
+        fi
+    else
+        echo "Script app_hook.sh does not exist in directory: $directory_path"
+    fi
+}
