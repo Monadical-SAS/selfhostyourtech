@@ -4,7 +4,6 @@ services:
     environment:
       BASEROW_PUBLIC_URL: 'https://baserow.${BASE_DOMAIN}'
     env_file:
-      - ./.shared-env
       - ./.env
     networks:
       - internal
