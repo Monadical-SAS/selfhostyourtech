@@ -1,6 +1,5 @@
 apps:
   - traefik
   - authentik
-  - zulip
   - onlyoffice
   - baserow
