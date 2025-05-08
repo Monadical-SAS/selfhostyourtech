@@ -2,4 +2,4 @@ apps:
   - traefik
   - authentik
   - zulip
-  - hedgedoc
+  - onlyoffice
