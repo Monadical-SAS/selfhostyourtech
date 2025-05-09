@@ -2,4 +2,5 @@ apps:
   - traefik
   - authentik
   - onlyoffice
-  - baserow
+  - ghost
+  - homer
