@@ -9,6 +9,7 @@ APPS_FILE = "../../etc/apps-enabled.yaml"
 CONFIG_FILE = "./etc/config.yaml"
 SERVICES_FILE = "./etc/services.yaml"
 HOMER_CONFIG = "./config/config.yml"  # Your actual homer config location
+BASE_DOMAIN_FILE = "../../basedomain.txt"
 
 def load_yaml(file_path):
     """Load YAML file"""
@@ -19,19 +20,31 @@ def load_yaml(file_path):
         print(f"Error loading {file_path}: {e}")
         return None
 
+
+def load_txt(file_path):
+    """Load text file and return its contents"""
+    try:
+        with open(file_path, 'r') as file:
+            return file.read()
+    except Exception as e:
+        print(f"Error loading {file_path}: {e}")
+        return None
+
+
 def generate_homer_config():
     """Generate Homer configuration based on enabled apps"""
     # Load configurations
     apps_config = load_yaml(APPS_FILE)
     global_config = load_yaml(CONFIG_FILE)
     services_config = load_yaml(SERVICES_FILE)
+    base_domain = load_txt(BASE_DOMAIN_FILE)
     
     if not apps_config or not global_config or not services_config:
         print("Failed to load configuration files")
         return False
     
     # Extract domain and enabled apps
-    domain = global_config.get('domain', 'example.com')
+    domain = base_domain
     enabled_apps = apps_config.get('apps', [])
     services_data = services_config.get('services', {})
     categories_data = services_config.get('categories', {})
@@ -128,21 +141,10 @@ def generate_homer_config():
         print(f"Error saving Homer configuration: {e}")
         return False
 
-def restart_homer():
-    """Restart Homer container to apply changes"""
-    try:
-        subprocess.run(["docker", "restart", "homer"], check=True)
-        print("Homer restarted successfully")
-        return True
-    except subprocess.CalledProcessError as e:
-        print(f"Failed to restart Homer: {e}")
-        return False
 
 if __name__ == "__main__":
     print("Generating Homer configuration...")
     if generate_homer_config():
         print("Configuration generated successfully")
-        if "--restart" in sys.argv:
-            restart_homer()
     else:
         print("Failed to generate configuration")
