@@ -11,9 +11,9 @@ services:
       # see https://ghost.org/docs/config/#configuration-options
       database__client: mysql
       database__connection__host: mysql
-      database__connection__user: root
-      database__connection__password: example
-      database__connection__database: ghost
+      database__connection__user: "${MYSQL_USER}"
+      database__connection__password: "${MYSQL_PASSWORD}"
+      database__connection__database: "${MYSQL_DATABASE}"
       # this url value is just an example, and is likely wrong for your environment!
       url: "https://ghost.${BASE_DOMAIN}"  # Update to use HTTPS
       # contrary to the default mentioned in the linked documentation, this image defaults to NODE_ENV=production (so development mode needs to be explicitly specified if desired)
@@ -47,7 +47,10 @@ services:
     networks:
       - ghost-internal  # Only internal network needed for DB
     environment:
-      MYSQL_ROOT_PASSWORD: example
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
       - ./data/mysql:/var/lib/mysql
 
