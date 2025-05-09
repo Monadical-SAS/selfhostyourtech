@@ -139,6 +139,7 @@ function run #description 'Run the docker compose stack'
 {   
     create_traefik_public_network
 
+    OLDIFS="$IFS"
     IFS=$'\n\t'        # Safer word splitting
     DEBUG="false"
 
@@ -163,7 +164,7 @@ function run #description 'Run the docker compose stack'
 
         if [ ! -d "$APP_DIR" ]; then
             echo "❌ Directory '$app' not found. Skipping."
-            exit 1
+            continue
         fi
 
         BASE_DOMAIN_VALUE=$(cat "$SELFHOSTYOURTECH_ROOT/basedomain.txt")
@@ -185,7 +186,7 @@ function run #description 'Run the docker compose stack'
 
         wait  # Keep script running to stream logs
     fi
-
+    IFS="$OLDIFS"
 }
 
 function install_docker #description 'Install docker'

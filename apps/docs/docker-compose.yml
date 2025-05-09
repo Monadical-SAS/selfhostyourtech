@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
-     - ./.shared-env
+    env_file:
      - ./.env
     networks:
       - traefik-public

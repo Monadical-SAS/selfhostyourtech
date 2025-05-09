@@ -17,7 +17,7 @@ function print_functions {
     while IFS= read -r line; do
         [[ "$line" == *"Helper Functions"* ]] && break
 
-        if [[ "$line" =~ ^function[[:space:]]+([a-zA-Z0-9_]+)[[:space:]]+--description[[:space:]]+(.*)$ ]]; then
+        if [[ "$line" =~ ^function[[:space:]]+([a-zA-Z0-9_]+)[[:space:]]+#description[[:space:]]+(.*)$ ]]; then
             name="${BASH_REMATCH[1]}"
             desc="${BASH_REMATCH[2]}"
             printf "   %-20s%s\n" "$name" "$desc"
