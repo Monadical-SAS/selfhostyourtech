@@ -145,4 +145,4 @@ if __name__ == "__main__":
         if "--restart" in sys.argv:
             restart_homer()
     else:
-        print("Failed to generate configuration"
+        print("Failed to generate configuration")
