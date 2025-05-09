@@ -1,5 +1,46 @@
 #!/bin/bash
 
+create_traefik_public_network() {
+    echo "Creating traefik public network..."
+    
+    # Check if network already exists
+    if docker network ls | grep -q "traefik-public"; then
+        echo "Network traefik-public already exists."
+        return 0
+    fi
+    
+    # Create the network with specific options
+    docker network create --attachable traefik-public
+        
+    echo "Network traefik-public created successfully."
+}
+
+tail_logs() {
+    local app="$1"
+    local APP_DIR="$SELFHOSTYOURTECH_ROOT/apps/$app"
+    cd "$APP_DIR"
+    docker compose logs -f --no-color 2>&1 | sed "s/^/[$app] /"
+}
+
+extract_domain() {
+    echo "$1" | sed -E 's/.*\.([^.]+\.[^.]+)$/\1/'
+}
+
+add_key_in_env() {
+    local KEY=$1
+    local VALUE=$2
+    local ENV_FILE=$3
+    if grep -q "^${KEY}=" "$ENV_FILE"; then
+        # Key exists, update it
+        sed -i "s|^${KEY}=.*|${KEY}=${VALUE}|" "$ENV_FILE"
+        echo "Updated $KEY in $ENV_FILE"
+    else
+        # Key doesn't exist, append it
+        echo "${KEY}=${VALUE}" >> "$ENV_FILE"
+        echo "Added $KEY to $ENV_FILE"
+    fi
+}
+
 update_env_record() {
     local key="$1"
     local value="$2"
@@ -36,7 +77,6 @@ update_env_record() {
     
     return 0
 }
-
 
 run_app_hook() {
     local directory_path="$1"

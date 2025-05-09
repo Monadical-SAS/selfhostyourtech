@@ -3,7 +3,6 @@ services:
   homer:
     image: b4bz/homer:latest
     env_file:
-     - ./.shared-env
      - ./.env
     container_name: homer
     volumes:

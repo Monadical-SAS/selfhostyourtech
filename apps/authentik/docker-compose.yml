@@ -5,7 +5,6 @@ services:
     volumes:
       - ./data/postgresql:/var/lib/postgresql/data
     env_file:
-     - ./.shared-env
      - ./.env
     environment:
       POSTGRES_PASSWORD: ${PG_PASS}
@@ -31,7 +30,6 @@ services:
       - 9443:9443
     command: server
     env_file:
-     - ./.shared-env
      - ./.env
     environment:
       AUTHENTIK_REDIS__HOST: redis
@@ -85,7 +83,6 @@ services:
       - traefik.http.middlewares.authentik.forwardauth.authResponseHeaders=X-authentik-username,X-authentik-groups,X-authentik-email,X-authentik-name,X-authentik-uid,X-authentik-jwt,X-authentik-meta-jwks,X-authentik-meta-outpost,X-authentik-meta-provider,X-authentik-meta-app,X-authentik-meta-version
   worker:
     env_file:
-     - ./.shared-env
      - ./.env
     image: ghcr.io/goauthentik/server
     restart: always
