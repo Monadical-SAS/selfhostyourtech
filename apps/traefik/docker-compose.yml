@@ -1,0 +1,88 @@
+services:
+
+  traefik:
+    # Use the latest v3.1.x Traefik image available
+    image: traefik:v3.1
+    env_file:
+     - ./.env
+    ports:
+      # Listen on port 80, default for HTTP, necessary to redirect to HTTPS
+      - "80:80"
+      # Listen on port 443, default for HTTPS
+      - "443:443"
+    volumes:
+      # Add Docker as a mounted volume, so that Traefik can read the labels of other services
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./letsencrypt:/letsencrypt
+    command:
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      # Entrypoints configuration
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      # Add HTTP to HTTPS redirect
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      # TLS configuration
+      - "--entrypoints.websecure.http.tls=true"
+      - "--entrypoints.websecure.http.tls.certResolver=letsencrypt"
+      # ACME Configuration
+      - "--certificatesresolvers.letsencrypt.acme.email=${EMAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      # Enable access logs to debug
+      - "--accesslog=true"
+      - "--accesslog.filepath=/var/log/traefik/access.log"
+      - "--log.level=DEBUG"
+    networks:
+      # Use the public network created to be shared between Traefik and
+      # any other service that needs to be publicly available with HTTPS
+      - traefik-public
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      # HTTP router for ACME challenges
+      - "traefik.http.routers.acme.rule=PathPrefix(`/.well-known/acme-challenge/`)"
+      - "traefik.http.routers.acme.entrypoints=web"
+      - "traefik.http.routers.acme.priority=100"
+      - "traefik.http.routers.acme.service=api@internal"
+      # Dashboard configuration
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.${BASE_DOMAIN}`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.tls=true"
+      - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
+      # Simplified auth configuration
+      - "traefik.http.middlewares.admin-auth.basicauth.users=${TRAEFIK_USER_AUTH}"
+      - "traefik.http.routers.dashboard.middlewares=admin-auth"
+
+  whoami:
+    image: traefik/whoami
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
+      # HTTP router for ACME challenges
+      - "traefik.http.routers.whoami-acme.rule=Host(`whoami.${BASE_DOMAIN}`) && PathPrefix(`/.well-known/acme-challenge/`)"
+      - "traefik.http.routers.whoami-acme.entrypoints=web"
+      - "traefik.http.routers.whoami-acme.priority=100"
+      # Main HTTPS router
+      - "traefik.http.routers.whoami-secure.rule=Host(`whoami.${BASE_DOMAIN}`)"
+      - "traefik.http.routers.whoami-secure.entrypoints=websecure"
+      - "traefik.http.routers.whoami-secure.tls=true"
+      - "traefik.http.routers.whoami-secure.tls.certresolver=letsencrypt"
+    networks:
+      - traefik-public
+
+volumes:
+  # Create a volume to store the certificates, there is a constraint to make sure
+  # Traefik is always deployed to the same Docker node with the same volume containing
+  # the HTTPS certificates
+  traefik-public-certificates:
+
+networks:
+  # Use the previously created public network "traefik-public", shared with other
+  # services that need to be publicly available via this Traefik
+  traefik-public:
+    external: true

@@ -1,0 +1,6 @@
+apps:
+  - traefik
+  - authentik
+  - onlyoffice
+  - ghost
+  - homer

@@ -1,0 +1,30 @@
+services:
+  homer:
+    image: b4bz/homer:latest
+    env_file:
+     - ./.env
+    container_name: homer
+    volumes:
+      - ./config:/www/assets
+    environment:
+      - INIT_ASSETS=1  # Only needed on first run
+    networks:
+      - traefik-public
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - traefik.http.routers.homer.rule=Host(`dashboard.${BASE_DOMAIN}`)
+      - traefik.http.routers.homer.entrypoints=web
+      - traefik.http.routers.homer.middlewares=redirect-to-https
+      - traefik.http.routers.homer-secure.rule=Host(`dashboard.${BASE_DOMAIN}`)
+      - traefik.http.routers.homer-secure.entrypoints=websecure
+      - traefik.http.routers.homer-secure.tls=true
+      - traefik.http.routers.homer-secure.tls.certresolver=letsencrypt
+      - traefik.http.services.homer.loadbalancer.server.port=8080
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true
+    restart: unless-stopped
+
+networks:
+  traefik-public:
+    external: true

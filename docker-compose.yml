@@ -1,0 +1,11 @@
+services:
+  manager:
+    build: .
+    container_name: app-manager
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # Access host Docker
+      - ./apps:/opt/selfhostyourtech/apps        # Compose files to run
+      - ./bin:/opt/selfhostyourtech/bin
+      - ./etc:/opt/selfhostyourtech/etc
+    command: ["/opt/selfhostyourtech/bin/run.sh"]
