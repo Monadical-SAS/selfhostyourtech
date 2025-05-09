@@ -94,7 +94,7 @@ run_app_hook() {
     fi
     
     # Path to the script
-    local script_path="${directory_path}/app_hook.sh"
+    local script_path="${directory_path}/bin/app_hook.sh"
     
     # Check if the script exists
     if [[ -f "$script_path" ]]; then
