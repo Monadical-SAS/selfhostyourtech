@@ -1,0 +1,11 @@
+apps:
+  - traefik
+  - authentik
+  - onlyoffice
+  - baserow
+  - homer
+  - zulip
+  - twenty
+  - nextcloud
+  - docs
+  - ghost

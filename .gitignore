@@ -36,8 +36,11 @@ yarn-error.log*
 next-env.d.ts
 
 # Data
-*/data/*
-!*/data/README.md
+**/data/*
+!**/data/README.md
 
 # Env files
-*/.env
+**/.env
+
+apps/homer/etc/config.yaml
+etc/basedomain.txt

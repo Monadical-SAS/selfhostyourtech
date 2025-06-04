@@ -1,0 +1,52 @@
+FROM ubuntu:22.04
+
+ARG SELFHOSTYOURTECH_ROOT_ARG
+
+ENV SELFHOSTYOURTECH_ROOT=${SELFHOSTYOURTECH_ROOT_ARG}
+ENV VENV_NAME ".venv-docker"
+
+# Install required packages and Docker
+RUN apt-get update -y && apt-get install -y \
+    ca-certificates \
+    curl \
+    python3 \
+    python3-pip \
+    python3-venv \
+    inotify-tools \
+    sudo \
+    apt-transport-https \
+    gnupg \
+    lsb-release \
+    git \
+    apache2-utils
+
+RUN python3 -m pip install virtualenv && \
+    virtualenv "/opt/$VENV_NAME"
+
+ENV PATH="/opt/$VENV_NAME/bin:${SELFHOSTYOURTECH_ROOT}/bin:${PATH}"
+
+# Set up Docker's apt repository
+RUN install -m 0755 -d /etc/apt/keyrings && \
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc && \
+    chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+    $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+    tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Update package index with Docker repository and install Docker
+RUN apt-get update -y && \
+    apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Install Supervisor
+RUN pip install supervisor pyyaml
+
+# Create necessary directories
+RUN mkdir -p /var/log/supervisor /etc/supervisor/conf.d
+
+# Expose port for web interface
+EXPOSE 9001
+
+# Start script
+CMD ["shtool", "run"]

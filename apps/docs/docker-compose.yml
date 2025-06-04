@@ -1,0 +1,38 @@
+services:
+  docs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - ALLOWED_ORIGINS=${BASE_DOMAIN},www.${BASE_DOMAIN}
+    restart: unless-stopped
+    networks:
+      - traefik-public
+    environment:
+      - ALLOWED_ORIGINS=${BASE_DOMAIN},www.${BASE_DOMAIN}
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - traefik.constraint-label=traefik-public
+      # Main domain route
+      - traefik.http.routers.docs-base.rule=Host(`${BASE_DOMAIN}`)
+      - traefik.http.routers.docs-base.entrypoints=web
+      - traefik.http.routers.docs-base.middlewares=redirect-to-https
+      - traefik.http.routers.docs-base-secure.rule=Host(`${BASE_DOMAIN}`)
+      - traefik.http.routers.docs-base-secure.entrypoints=websecure
+      - traefik.http.routers.docs-base-secure.tls=true
+      - traefik.http.routers.docs-base-secure.tls.certresolver=letsencrypt
+      - traefik.http.routers.docs.rule=Host(`www.${BASE_DOMAIN}`)
+      - traefik.http.routers.docs.entrypoints=web
+      - traefik.http.routers.docs.middlewares=redirect-to-https
+      - traefik.http.routers.docs-secure.rule=Host(`www.${BASE_DOMAIN}`)
+      - traefik.http.routers.docs-secure.entrypoints=websecure
+      - traefik.http.routers.docs-secure.tls=true
+      - traefik.http.routers.docs-secure.tls.certresolver=letsencrypt
+      - traefik.http.services.docs.loadbalancer.server.port=3000
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true
+
+networks:
+  traefik-public:
+    external: true

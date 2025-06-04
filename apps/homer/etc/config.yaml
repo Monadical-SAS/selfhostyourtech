@@ -1,0 +1,138 @@
+services:
+  zulip:
+    category: "Communication"
+    name: "Zulip"
+    logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/zulip.png"
+    subtitle: "Team chat with threaded conversations"
+    type: null
+
+  nextcloud:
+    category: "Office"
+    name: "Nextcloud"
+    logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/nextcloud.png"
+    subtitle: "File sharing and collaboration"
+    type: "Nextcloud"
+
+  onlyoffice:
+    category: "Office"
+    name: "ONLYOFFICE"
+    logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/onlyoffice.png"
+    subtitle: "Online document editing"
+    type: null
+
+  hedgedoc:
+    category: "Office"
+    name: "HedgeDoc"
+    logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/hedgedoc.png"
+    subtitle: "Collaborative markdown editor"
+    type: null
+
+  baserow:
+    category: "CRM & Data"
+    name: "Baserow"
+    logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/baserow.png"
+    subtitle: "No-code database & CRM"
+    type: null
+
+  twenty:
+    category: "CRM & Data"
+    name: "Twenty"
+    logo: "https://kagi.com/proxy/YWJzOi8vZGlzdC9pY29ucy90d2VudHktY3JtXzIyMjY2Ni53ZWJw.png?c=ktUNJsvV_6Mi937H24fM6pFecXGUZJOyzSipagwBjW_MVZ3OzkQab6raJDd_jQcqgM1EscqgD-slkavCSN7gL78Wt9_7pwlu7WLwNDGWGIEEyiqu6GrMV4KG4uLwuTWGuZOITY8Ln8ze0HdRs4PAc1u2Ozls7smQSPpDe7UwpEWBwYnZMBAotWRmt5i0c9iYLLgQTaWwdtmbIEd6crmIWEwq4ZDJsk63YVSnzYJ1OPk%3D"
+    subtitle: "Modern CRM platform"
+    type: null
+
+  authentik:
+    category: "Security"
+    name: "Authentik"
+    logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/authentik.png"
+    subtitle: "Identity provider & SSO"
+    type: null
+
+  traefik:
+    category: "Security"
+    name: "Traefik"
+    logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/traefik.png"
+    subtitle: "Reverse proxy & SSL"
+    type: "Traefik"
+
+  portainer:
+    category: "DevOps"
+    name: "Portainer"
+    logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/portainer.png"
+    subtitle: "Container management"
+    type: "Portainer"
+
+  n8n:
+    category: "DevOps"
+    name: "n8n"
+    logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/n8n.png"
+    subtitle: "Workflow automation"
+    type: null
+
+  gitea:
+    category: "DevOps"
+    name: "Gitea"
+    logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/gitea.png"
+    subtitle: "Git server"
+    type: null
+
+  ghost:
+    category: "Publishing"
+    name: "Ghost"
+    logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/ghost-light.png"
+    subtitle: "Professional publishing platform"
+    type: null
+
+  wordpress:
+    category: "Publishing"
+    name: "WordPress"
+    logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/wordpress.png"
+    subtitle: "Website & blog platform"
+    type: null
+
+  librechat:
+    category: "AI & Tools"
+    name: "LibreChat"
+    logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/librechat.png"
+    subtitle: "AI chat interface"
+    type: null
+
+  helix:
+    category: "AI & Tools"
+    name: "Helix"
+    logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/helix.png"
+    subtitle: "AI development assistant"
+    type: null
+
+  reflector:
+    category: "AI & Tools"
+    name: "Reflector"
+    logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/reflector.png"
+    subtitle: "AI content analysis"
+    type: null
+
+  homer:
+    category: "System"
+    name: "Homer"
+    logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/homer.png"
+    subtitle: "Homepage dashboard"
+    type: null
+    alias: "dashboard"
+
+categories:
+  Communication:
+    icon: "fas fa-comments"
+  Office:
+    icon: "fas fa-briefcase"
+  "CRM & Data":
+    icon: "fas fa-database"
+  Security:
+    icon: "fas fa-shield-alt"
+  DevOps:
+    icon: "fas fa-code-branch"
+  Publishing:
+    icon: "fas fa-globe"
+  "AI & Tools":
+    icon: "fas fa-robot"
+  System:
+    icon: "fas fa-server"
