@@ -35,4 +35,5 @@ services:
 
 networks:
   traefik-public:
-    external: true
+    external: ${TRAEFIK_EXTERNAL:-false}
+    name: ${TRAEFIK_NETWORK:-traefik-public}

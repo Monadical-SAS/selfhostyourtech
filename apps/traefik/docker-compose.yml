@@ -85,4 +85,5 @@ networks:
   # Use the previously created public network "traefik-public", shared with other
   # services that need to be publicly available via this Traefik
   traefik-public:
-    external: true
+    external: ${TRAEFIK_EXTERNAL:-false}
+    name: ${TRAEFIK_NETWORK:-traefik-public}

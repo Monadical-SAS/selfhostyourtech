@@ -6,6 +6,7 @@ services:
     networks:
       - ghost-internal  # Add internal network for DB communication
       - traefik-public  # Keep traefik network for external access
+      - internal
     environment:
       # see https://ghost.org/docs/config/#configuration-options
       database__client: mysql
@@ -54,6 +55,6 @@ services:
 
 networks:
   ghost-internal:
-    internal: true  # This makes it only accessible within the stack
   traefik-public:
-    external: true
+    external: ${TRAEFIK_EXTERNAL:-false}
+    name: ${TRAEFIK_NETWORK:-traefik-public}

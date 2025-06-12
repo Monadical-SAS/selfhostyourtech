@@ -103,7 +103,7 @@ services:
       - authentik-internal
 
 networks:
-  traefik-public:
-    external: true
   authentik-internal:
-    internal: true
+  traefik-public:
+    external: ${TRAEFIK_EXTERNAL:-false}
+    name: ${TRAEFIK_NETWORK:-traefik-public}
