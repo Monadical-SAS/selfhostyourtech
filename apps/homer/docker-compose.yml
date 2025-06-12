@@ -11,20 +11,21 @@ services:
     networks:
       - traefik-public
     labels:
-      - traefik.enable=true
+      - traefik.enable=${ENABLE_TRAEFIK:-false}
       - traefik.docker.network=traefik-public
       - traefik.http.routers.homer.rule=Host(`dashboard.${BASE_DOMAIN}`)
       - traefik.http.routers.homer.entrypoints=web
-      - traefik.http.routers.homer.middlewares=redirect-to-https
+      - "${HTTPS_MIDDLEWARE:+traefik.http.routers.homer.middlewares=${HTTPS_MIDDLEWARE}}"
       - traefik.http.routers.homer-secure.rule=Host(`dashboard.${BASE_DOMAIN}`)
-      - traefik.http.routers.homer-secure.entrypoints=websecure
-      - traefik.http.routers.homer-secure.tls=true
-      - traefik.http.routers.homer-secure.tls.certresolver=letsencrypt
+      - traefik.http.routers.homer-secure.entrypoints=${HTTPS_ENTRYPOINT:-}
+      - traefik.http.routers.homer-secure.tls=${ENABLE_TLS:-}"
+      - traefik.http.routers.homer-secure.tls.certresolver=${TLS_RESOLVER:-}
       - traefik.http.services.homer.loadbalancer.server.port=8080
-      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
-      - traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true
+      - "${REDIRECT_SCHEME:+traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=${REDIRECT_SCHEME}}"
+      - "${REDIRECT_PERMANENT:+traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=${REDIRECT_PERMANENT}}"
     restart: unless-stopped
 
 networks:
   traefik-public:
-    external: true
+    external: ${ENABLE_TRAEFIK:-false}
+    name: ${TRAEFIK_NETWORK:-traefik-public}

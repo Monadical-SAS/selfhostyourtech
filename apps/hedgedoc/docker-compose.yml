@@ -30,18 +30,18 @@ services:
       - internal
       - traefik-public
     labels:
-      - traefik.enable=true
+      - traefik.enable=${ENABLE_TRAEFIK:-false}
       - traefik.docker.network=traefik-public
       - traefik.http.routers.hedgedoc.rule=Host(`hedgedoc.${BASE_DOMAIN}`)
       - traefik.http.routers.hedgedoc.entrypoints=web
-      - traefik.http.routers.hedgedoc.middlewares=redirect-to-https
+      - "${HTTPS_MIDDLEWARE:+traefik.http.routers.hedgedoc.middlewares=${HTTPS_MIDDLEWARE}}"
       - traefik.http.routers.hedgedoc-secure.rule=Host(`hedgedoc.${BASE_DOMAIN}`)
-      - traefik.http.routers.hedgedoc-secure.entrypoints=websecure
-      - traefik.http.routers.hedgedoc-secure.tls=true
-      - traefik.http.routers.hedgedoc-secure.tls.certresolver=letsencrypt
+      - traefik.http.routers.hedgedoc-secure.entrypoints=${HTTPS_ENTRYPOINT:-}
+      - traefik.http.routers.hedgedoc-secure.tls=${ENABLE_TLS:-}"
+      - traefik.http.routers.hedgedoc-secure.tls.certresolver=${TLS_RESOLVER:-}
       - traefik.http.services.hedgedoc.loadbalancer.server.port=3000
-      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
-      - traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true
+      - "${REDIRECT_SCHEME:+traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=${REDIRECT_SCHEME}}"
+      - "${REDIRECT_PERMANENT:+traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=${REDIRECT_PERMANENT}}"
     restart: always
     depends_on:
       - hedgedoc_database
@@ -51,4 +51,5 @@ volumes:
 networks:
   internal:
   traefik-public:
-    external: true
+    external: ${ENABLE_TRAEFIK:-false}
+    name: ${TRAEFIK_NETWORK:-traefik-public}

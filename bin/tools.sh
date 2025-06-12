@@ -41,6 +41,19 @@ add_key_in_env() {
     fi
 }
 
+delete_key_in_env() {
+    local KEY=$1
+    local ENV_FILE=$2
+    if grep -q "^${KEY}=" "$ENV_FILE"; then
+        # Key exists, delete it
+        sed -i "/^${KEY}=/d" "$ENV_FILE"
+        echo "Deleted $KEY from $ENV_FILE"
+    else
+        # Key doesn't exist
+        echo "$KEY not found in $ENV_FILE"
+    fi
+}
+
 update_env_record() {
     local key="$1"
     local value="$2"
@@ -113,7 +126,7 @@ generate_supervisor_config() {
     SELFHOSTYOURTECH_ROOT="$4"
 
     mkdir -p "$CONF_DIR"
-    find /opt/selfhostyourtech/etc/supervisor/conf.d/ -type f -delete
+    find "$SELFHOSTYOURTECH_ROOT/etc/supervisor/conf.d/" -type f -delete
     for app in $APPS_LIST; do
         app_dir="$APPS_DIR/$app"
         if [ -f "$app_dir/docker-compose.yml" ]; then
@@ -126,8 +139,10 @@ autostart=true
 autorestart=true
 stderr_logfile=/var/log/supervisor/$app_name.err.log
 stdout_logfile=/var/log/supervisor/$app_name.out.log
-stopsignal=QUIT
+stopsignal=SIGTERM
 stopwaitsecs=30
+killasgroup=true
+stopasgroup=true
 EOF
             echo "Created supervisor config for $app_name"
         fi

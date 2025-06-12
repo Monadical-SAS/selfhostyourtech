@@ -141,15 +141,15 @@ services:
       - internal
       - traefik-public
     labels:
-      - traefik.enable=true
+      - traefik.enable=${ENABLE_TRAEFIK:-false}
       - traefik.docker.network=traefik-public
       - traefik.http.routers.zulip.rule=Host(`zulip.${BASE_DOMAIN}`)
       - traefik.http.routers.zulip.entrypoints=web
-      - traefik.http.routers.zulip.middlewares=redirect-to-https
+      - "${HTTPS_MIDDLEWARE:+traefik.http.routers.zulip.middlewares=${HTTPS_MIDDLEWARE}}"
       - traefik.http.routers.zulip-secure.rule=Host(`zulip.${BASE_DOMAIN}`)
       - traefik.http.routers.zulip-secure.entrypoints=websecure
       - traefik.http.routers.zulip-secure.tls=true
-      - traefik.http.routers.zulip-secure.tls.certresolver=letsencrypt
+      - "${TLS_RESOLVER:+traefik.http.routers.zulip-secure.tls.certresolver=${TLS_RESOLVER}}"
       - traefik.http.services.zulip.loadbalancer.server.port=80
       - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
       - traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true
@@ -167,4 +167,5 @@ volumes:
 networks:
   internal:
   traefik-public:
-    external: true
+    external: ${ENABLE_TRAEFIK:-false}
+    name: ${TRAEFIK_NETWORK:-traefik-public}

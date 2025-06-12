@@ -16,10 +16,10 @@ update_env_record "RABBITMQ_PASSWORD" "$(openssl rand -hex 32)" "$ENV_FILE"
 update_env_record "ZULIP_SECRET_KEY" "$(openssl rand -base64 32)" "$ENV_FILE"
 update_env_record "ZULIP_SECRET_KEY" "$(openssl rand -base64 32)" "$ENV_FILE"
 
-BASE_DOMAIN_VALUE=$(cat "$ROOT/etc/basedomain.txt")
+BASE_DOMAIN_VALUE=$(yq '.base_domain' "$SELFHOSTYOURTECH_ROOT/etc/config.yaml")
 add_key_in_env "BASE_DOMAIN" "$BASE_DOMAIN_VALUE" "$ENV_FILE"
 
-EMAIL_HOST_USER_VALUE=$(cat "$ROOT/etc/default_admin_email.txt")
+EMAIL_HOST_USER_VALUE=$(yq '.default_admin_email' "$SELFHOSTYOURTECH_ROOT/etc/config.yaml")
 add_key_in_env "EMAIL_HOST_USER" "$EMAIL_HOST_USER_VALUE" "$ENV_FILE"
 
 echo "Complete EMAIL_HOST_USER env variable please ..."

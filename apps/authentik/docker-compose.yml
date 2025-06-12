@@ -52,28 +52,28 @@ services:
       - traefik-public
       - authentik-internal
     labels:
-      - traefik.enable=true
+      - traefik.enable=${ENABLE_TRAEFIK:-false}
       - traefik.docker.network=traefik-public
       # Define the service explicitly
       - traefik.http.services.authentik.loadbalancer.server.port=9000
       # HTTP router
       - traefik.http.routers.authentik.rule=Host(`authentik.${BASE_DOMAIN}`)
       - traefik.http.routers.authentik.entrypoints=web
-      - traefik.http.routers.authentik.middlewares=redirect-to-https
+      - "${HTTPS_MIDDLEWARE:+traefik.http.routers.authentik.middlewares=${HTTPS_MIDDLEWARE}}"
       # HTTPS router
       - traefik.http.routers.authentik-secure.rule=Host(`authentik.${BASE_DOMAIN}`)
-      - traefik.http.routers.authentik-secure.entrypoints=websecure
-      - traefik.http.routers.authentik-secure.tls=true
-      - traefik.http.routers.authentik-secure.tls.certresolver=letsencrypt
+      - traefik.http.routers.authentik-secure.entrypoints=${HTTPS_ENTRYPOINT:-}
+      - traefik.http.routers.authentik-secure.tls=${ENABLE_TLS:-}"
+      - traefik.http.routers.authentik-secure.tls.certresolver=${TLS_RESOLVER:-}
       - traefik.http.routers.authentik-secure.service=authentik
       # Outpost endpoints
       - traefik.http.routers.authentik-outpost.rule=HostRegexp(`{subdomain:[a-zA-Z0-9-]+}.${BASE_DOMAIN}`) && PathPrefix(`/outpost.goauthentik.io/`)
-      - traefik.http.routers.authentik-outpost.entrypoints=websecure
-      - traefik.http.routers.authentik-outpost.tls=true
-      - traefik.http.routers.authentik-outpost.tls.certresolver=letsencrypt
+      - traefik.http.routers.authentik-outpost.entrypoints=${HTTPS_ENTRYPOINT:-}
+      - traefik.http.routers.authentik-outpost.tls=${ENABLE_TLS:-}"
+      - traefik.http.routers.authentik-outpost.tls.certresolver=${TLS_RESOLVER:-}
       # HTTPS redirect middleware
-      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
-      - traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true
+      - "${REDIRECT_SCHEME:+traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=${REDIRECT_SCHEME}}"
+      - "${REDIRECT_PERMANENT:+traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=${REDIRECT_PERMANENT}}"
       # Forward auth configuration
       - traefik.http.middlewares.authentik.forwardauth.address=http://authentik-proxy:9000/outpost.goauthentik.io/auth/traefik
       - traefik.http.middlewares.authentik.forwardauth.trustForwardHeader=true
@@ -103,7 +103,7 @@ services:
       - authentik-internal
 
 networks:
-  traefik-public:
-    external: true
   authentik-internal:
-    internal: true
+  traefik-public:
+    external: ${ENABLE_TRAEFIK:-false}
+    name: ${TRAEFIK_NETWORK:-traefik-public}

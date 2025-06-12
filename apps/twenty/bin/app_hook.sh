@@ -16,5 +16,5 @@ update_env_record "STORAGE_S3_NAME" "twenty-bucket" "$ENV_FILE"
 update_env_record "STORAGE_S3_ENDPOINT" "http://minio:9000" "$ENV_FILE"
 update_env_record "STORAGE_S3_REGION" "us-east-1" "$ENV_FILE"
 
-BASE_DOMAIN_VALUE=$(cat "$ROOT/etc/basedomain.txt")
+BASE_DOMAIN_VALUE=$(yq '.base_domain' "$SELFHOSTYOURTECH_ROOT/etc/config.yaml")
 add_key_in_env "BASE_DOMAIN" "$BASE_DOMAIN_VALUE" "$ENV_FILE"

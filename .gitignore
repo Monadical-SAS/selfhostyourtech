@@ -43,4 +43,10 @@ next-env.d.ts
 **/.env
 
 apps/homer/etc/config.yaml
+apps/homer/config/config.yml
 etc/basedomain.txt
+etc/default_admin_email.txt
+etc/environment.txt
+etc/config.yaml
+
+etc/supervisor/conf.d/*
