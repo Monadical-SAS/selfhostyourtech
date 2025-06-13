@@ -62,7 +62,7 @@ services:
       - traefik.http.routers.twenty.entrypoints=web
       - traefik.http.services.twenty.loadbalancer.server.port=3000
       - traefik.http.routers.twenty.middlewares=${HTTPS_MIDDLEWARE:-}"
-      - traefik.http.routers.twenty-secure.rule=${HTTPS_RULE:-}"
+      - traefik.http.routers.twenty-secure.rule=Host(`twenty.${BASE_DOMAIN}`)
       - traefik.http.routers.twenty-secure.entrypoints=${HTTPS_ENTRYPOINT:-}"
       - traefik.http.routers.twenty-secure.tls=${ENABLE_TLS:-}"
       - traefik.http.routers.twenty-secure.tls.certresolver=${TLS_RESOLVER:-}"
