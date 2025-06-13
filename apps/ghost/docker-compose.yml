@@ -6,6 +6,7 @@ services:
     networks:
       - ghost-internal  # Add internal network for DB communication
       - traefik-public  # Keep traefik network for external access
+      - internal
     environment:
       # see https://ghost.org/docs/config/#configuration-options
       database__client: mysql
@@ -26,19 +27,19 @@ services:
     volumes:
       - ./data/ghost:/var/lib/ghost/content
     labels:
-      - traefik.enable=true
+      - traefik.enable=${ENABLE_TRAEFIK:-false}
       - traefik.docker.network=traefik-public
       - traefik.http.services.ghost-service.loadbalancer.server.port=2368
       - traefik.http.routers.ghost.rule=Host(`ghost.${BASE_DOMAIN}`)
       - traefik.http.routers.ghost.entrypoints=web
-      - traefik.http.routers.ghost.middlewares=redirect-to-https
+      - traefik.http.routers.ghost.middlewares=${HTTPS_MIDDLEWARE:-}"
       - traefik.http.routers.ghost-secure.rule=Host(`ghost.${BASE_DOMAIN}`)
-      - traefik.http.routers.ghost-secure.entrypoints=websecure
-      - traefik.http.routers.ghost-secure.tls=true
-      - traefik.http.routers.ghost-secure.tls.certresolver=letsencrypt
+      - traefik.http.routers.ghost-secure.entrypoints=${HTTPS_ENTRYPOINT:-}"
+      - traefik.http.routers.ghost-secure.tls=${ENABLE_TLS:-}"
+      - traefik.http.routers.ghost-secure.tls.certresolver=${TLS_RESOLVER:-}"
       - traefik.http.routers.ghost-secure.service=ghost-service
-      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
-      - traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=${REDIRECT_SCHEME:-}"
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=${REDIRECT_PERMANENT:-}"
 
   mysql:
     image: mysql:8.0
@@ -54,6 +55,6 @@ services:
 
 networks:
   ghost-internal:
-    internal: true  # This makes it only accessible within the stack
   traefik-public:
-    external: true
+    external: ${ENABLE_TRAEFIK:-false}
+    name: ${TRAEFIK_NETWORK:-traefik-public}

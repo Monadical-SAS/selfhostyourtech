@@ -41,6 +41,19 @@ add_key_in_env() {
     fi
 }
 
+delete_key_in_env() {
+    local KEY=$1
+    local ENV_FILE=$2
+    if grep -q "^${KEY}=" "$ENV_FILE"; then
+        # Key exists, delete it
+        sed -i "/^${KEY}=/d" "$ENV_FILE"
+        echo "Deleted $KEY from $ENV_FILE"
+    else
+        # Key doesn't exist
+        echo "$KEY not found in $ENV_FILE"
+    fi
+}
+
 update_env_record() {
     local key="$1"
     local value="$2"

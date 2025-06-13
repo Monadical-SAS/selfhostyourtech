@@ -56,18 +56,19 @@ services:
       # AUTH_MICROSOFT_CALLBACK_URL: ${AUTH_MICROSOFT_CALLBACK_URL}
       # AUTH_MICROSOFT_APIS_CALLBACK_URL: ${AUTH_MICROSOFT_APIS_CALLBACK_URL}
     labels:
-      - traefik.enable=true
+      - traefik.enable=${ENABLE_TRAEFIK:-false}
       - traefik.docker.network=traefik-public
       - traefik.http.routers.twenty.rule=Host(`twenty.${BASE_DOMAIN}`)
       - traefik.http.routers.twenty.entrypoints=web
-      - traefik.http.routers.twenty.middlewares=redirect-to-https
-      - traefik.http.routers.twenty-secure.rule=Host(`twenty.${BASE_DOMAIN}`)
-      - traefik.http.routers.twenty-secure.entrypoints=websecure
-      - traefik.http.routers.twenty-secure.tls=true
-      - traefik.http.routers.twenty-secure.tls.certresolver=letsencrypt
       - traefik.http.services.twenty.loadbalancer.server.port=3000
-      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
-      - traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true
+      - traefik.http.routers.twenty.middlewares=${HTTPS_MIDDLEWARE:-}"
+      - traefik.http.routers.twenty-secure.rule=Host(`twenty.${BASE_DOMAIN}`)
+      - traefik.http.routers.twenty-secure.entrypoints=${HTTPS_ENTRYPOINT:-}"
+      - traefik.http.routers.twenty-secure.tls=${ENABLE_TLS:-}"
+      - traefik.http.routers.twenty-secure.tls.certresolver=${TLS_RESOLVER:-}"
+      
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=${REDIRECT_SCHEME:-}"
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=${REDIRECT_PERMANENT:-}"
     depends_on:
       change-vol-ownership:
         condition: service_completed_successfully
@@ -208,4 +209,5 @@ volumes:
 networks:
   internal:
   traefik-public:
-    external: true
+    external: ${ENABLE_TRAEFIK:-false}
+    name: ${TRAEFIK_NETWORK:-traefik-public}
