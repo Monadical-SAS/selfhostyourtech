@@ -79,21 +79,21 @@ function set_shared_env #description 'Configure shared env variables'
     APP_DIR="$SELFHOSTYOURTECH_ROOT/apps/$app_name"
 
     if [[ "$environment" == "dev"]]; then
+        delete_key_in_env "ENABLE_TRAEFIK" "$APP_DIR/.env"
         delete_key_in_env "HTTPS_MIDDLEWARE" "$APP_DIR/.env"
-        delete_key_in_env "HTTPS_RULE" "$APP_DIR/.env"
         delete_key_in_env "HTTPS_ENTRYPOINT" "$APP_DIR/.env"
         delete_key_in_env "ENABLE_TLS" "$APP_DIR/.env"
         delete_key_in_env "TLS_RESOLVER" "$APP_DIR/.env"
         delete_key_in_env "REDIRECT_SCHEME" "$APP_DIR/.env"
         delete_key_in_env "REDIRECT_PERMANENT" "$APP_DIR/.env"
     else
-        add_key_in_env "HTTPS_MIDDLEWARE" "$BASE_DOMAIN_VALUE" "$APP_DIR/.env"
-        add_key_in_env "HTTPS_RULE" "$BASE_DOMAIN_VALUE" "$APP_DIR/.env"
-        add_key_in_env "HTTPS_ENTRYPOINT" "$BASE_DOMAIN_VALUE" "$APP_DIR/.env"
-        add_key_in_env "ENABLE_TLS" "$BASE_DOMAIN_VALUE" "$APP_DIR/.env"
-        add_key_in_env "TLS_RESOLVER" "$BASE_DOMAIN_VALUE" "$APP_DIR/.env"
-        add_key_in_env "REDIRECT_SCHEME" "$BASE_DOMAIN_VALUE" "$APP_DIR/.env"
-        add_key_in_env "REDIRECT_PERMANENT" "$BASE_DOMAIN_VALUE" "$APP_DIR/.env"
+        add_key_in_env "ENABLE_TRAEFIK" "true" "$APP_DIR/.env"
+        add_key_in_env "HTTPS_MIDDLEWARE" "redirect-to-https" "$APP_DIR/.env"
+        add_key_in_env "HTTPS_ENTRYPOINT" "websecure" "$APP_DIR/.env"
+        add_key_in_env "ENABLE_TLS" "true" "$APP_DIR/.env"
+        add_key_in_env "TLS_RESOLVER" "letsencrypt" "$APP_DIR/.env"
+        add_key_in_env "REDIRECT_SCHEME" "https" "$APP_DIR/.env"
+        add_key_in_env "REDIRECT_PERMANENT" "true" "$APP_DIR/.env"
     fi
 }
 
