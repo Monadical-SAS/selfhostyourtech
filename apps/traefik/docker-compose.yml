@@ -51,7 +51,7 @@ services:
       # Dashboard configuration
       - "traefik.http.routers.dashboard.rule=Host(`traefik.${BASE_DOMAIN}`)"
       - "traefik.http.routers.dashboard.service=api@internal"
-      - "traefik.http.routers.dashboard.entrypoints=${HTTPS_MIDDLEWARE:-}"
+      - "traefik.http.routers.dashboard.entrypoints=${HTTPS_ENTRYPOINT:-}"
       - "traefik.http.routers.dashboard.tls=${ENABLE_TLS:-}"
       - "traefik.http.routers.dashboard.tls.certresolver=${TLS_RESOLVER:-}"
       # Simplified auth configuration
