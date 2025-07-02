@@ -63,7 +63,7 @@ Get up and running in minutes with our automated installer that configures every
 
 3. Configure Let's Encrypt for SSL certificates:
    ```bash
-   docker compose run --rm manager shtool setup_letsencrypt <domain> <email> [traefik_username] [traefik_password]
+   docker compose run --rm manager shtool setup_letsencrypt <domain> <email> [traefik_username] [traefik_password] [environment]
    ```
    
    Parameters:
@@ -71,10 +71,11 @@ Get up and running in minutes with our automated installer that configures every
    - `<email>`: Email for Let's Encrypt notifications (required)
    - `[username]`: Admin username (optional, defaults to "admin")
    - `[password]`: Admin password (optional, auto-generated if not specified)
+   - `[environment]`: Environment type - "prod" or "dev" (optional, defaults to "prod")
    
    Example:
    ```bash
-   docker compose run --rm manager shtool setup_letsencrypt example.com admin@example.com myadmin mysecurepass
+   docker compose run --rm manager shtool setup_letsencrypt example.com admin@example.com myadmin mysecurepass prod
    ```
    Note: If password is omitted, a secure random password will be generated.
 
@@ -99,6 +100,24 @@ Get up and running in minutes with our automated installer that configures every
    docker compose up -d
    ```
 
+## Environment Configuration
+
+SelfHostYour.Tech supports two deployment environments:
+
+### Production Environment (prod)
+- **HTTPS enabled**: All services use SSL/TLS certificates from Let's Encrypt
+- **Secure redirects**: HTTP traffic is automatically redirected to HTTPS
+- **Full SSL validation**: Complete certificate chain validation
+- **Recommended for**: Live deployments, production use
+
+### Development Environment (dev)
+- **HTTP only**: Services run without SSL certificates
+- **No redirects**: Direct HTTP access without HTTPS enforcement
+- **Local development**: Suitable for localhost testing
+- **Recommended for**: Testing, development, local setups
+
+The environment is configured during the `setup_letsencrypt` step and affects all services automatically.
+
 ## Starting/Stopping/Status Services
 
 ```bash
@@ -107,6 +126,7 @@ docker compose exec -ti manager shtool stop
 docker compose exec -ti manager shtool start <service>
 docker compose exec -ti manager shtool stop <service>
 docker compose exec -ti manager shtool status
+docker compose exec -ti manager shtool reload
 ```
 
 ## Managing Services by Docker Compose wrapper
@@ -122,6 +142,64 @@ Examples:
 - Stop a service: `docker compose run --rm manager shtool manage zulip stop`
 - Start a service: `docker compose run --rm manager shtool manage nextcloud up -d`
 - View logs: `docker compose run --rm manager shtool manage ghost logs -f`
+
+## Deployment Management
+
+### Deploy Individual Services
+
+Deploy or redeploy a specific service:
+```bash
+docker compose run --rm manager shtool deploy <service_name> [force_rebuild]
+docker compose run --rm manager shtool redeploy <service_name> [force_rebuild]
+```
+
+Examples:
+```bash
+# Deploy Nextcloud
+docker compose run --rm manager shtool deploy nextcloud
+
+# Redeploy with forced rebuild
+docker compose run --rm manager shtool redeploy nextcloud true
+```
+
+### Deploy All Services
+
+Redeploy all enabled services:
+```bash
+docker compose run --rm manager shtool redeploy_all [force_rebuild]
+```
+
+Example:
+```bash
+# Redeploy all services with forced rebuild
+docker compose run --rm manager shtool redeploy_all true
+```
+
+## Data Management and Cleanup
+
+### Clean All Data
+**⚠️ WARNING: This will permanently delete ALL data**
+
+```bash
+docker compose run --rm manager shtool clean
+```
+
+This command will:
+- Stop all services
+- Remove all Docker volumes
+- Require confirmation with a randomly generated code
+
+### Clean Individual Service Data
+**⚠️ WARNING: This will permanently delete data for the specified service**
+
+```bash
+docker compose run --rm manager shtool clean_app <service_name>
+```
+
+Example:
+```bash
+docker compose run --rm manager shtool clean_app nextcloud
+```
 
 ### Application Configuration
 
@@ -227,6 +305,19 @@ The following services are in development or planned for future releases:
 - **SSL certificate problems**: Run `docker compose run --rm manager shtool setup_letsencrypt` again
 - **Incorrect credentials**: Reconfigure application settings with `docker compose run --rm manager shtool configure_app_settings`
 - **Configuration issues**: Check application-specific configuration files in the service directory
+- **Environment mismatch**: Ensure your environment (prod/dev) is correctly configured
+
+### Environment-Specific Issues
+
+**Production Environment:**
+- Verify domain DNS is pointing to your server
+- Ensure ports 80 and 443 are open and accessible
+- Check Let's Encrypt certificate generation in Traefik logs
+
+**Development Environment:**
+- Services will be accessible via HTTP only
+- Use `localhost` or your local IP address
+- No SSL certificates required
 
 ## Best Practices
 
@@ -235,6 +326,8 @@ The following services are in development or planned for future releases:
 3. Monitor system resources to ensure adequate capacity
 4. Implement proper security measures and network isolation
 5. Set up monitoring for critical services
+6. Use production environment for live deployments
+7. Test changes in development environment first
 
 ## Support and Community
 

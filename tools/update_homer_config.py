@@ -12,7 +12,7 @@ APPS_FILE = f"{SELFHOSTYOURTECH_ROOT}/etc/apps-enabled.yaml"
 CONFIG_FILE = f"{SELFHOSTYOURTECH_ROOT}/apps/homer/etc/config.yaml"
 SERVICES_FILE = f"{SELFHOSTYOURTECH_ROOT}/apps/homer/etc/services.yaml"
 HOMER_CONFIG = f"{SELFHOSTYOURTECH_ROOT}/apps/homer/config/config.yml"
-BASE_DOMAIN_FILE = f"{SELFHOSTYOURTECH_ROOT}/etc/basedomain.txt"
+SHARED_CONFIG = f"{SELFHOSTYOURTECH_ROOT}/etc/config.yaml"
 
 def load_yaml(file_path):
     """Load YAML file"""
@@ -40,8 +40,14 @@ def generate_homer_config():
     apps_config = load_yaml(APPS_FILE)
     global_config = load_yaml(CONFIG_FILE)
     services_config = load_yaml(SERVICES_FILE)
-    base_domain = load_txt(BASE_DOMAIN_FILE)
-    
+    shared_config = load_yaml(SHARED_CONFIG)
+    base_domain = shared_config['base_domain']
+    environment = shared_config['environment']
+
+    http_scheme = "https"
+    if environment == "dev":
+        http_scheme = "http"
+
     if not apps_config or not global_config or not services_config:
         print("Failed to load configuration files")
         return False
@@ -81,7 +87,7 @@ def generate_homer_config():
             {
                 "name": "Documentation",
                 "icon": "fas fa-book",
-                "url": f"https://docs.{domain}",
+                "url": f"{http_scheme}://docs.{domain}",
                 "target": "_blank"
             },
             {
@@ -117,7 +123,7 @@ def generate_homer_config():
                 "name": app_info.get("name", app_name.capitalize()),
                 "logo": app_info.get("logo", ""),
                 "subtitle": app_info.get("subtitle", ""),
-                "url": f"https://{subdomain}.{domain}",
+                "url": f"{http_scheme}://{subdomain}.{domain}",
                 "target": "_blank"
             }
             
