@@ -39,7 +39,7 @@ function setup_letsencrypt #description 'Set up Lets Encrypt certificates for Tr
         chmod 600 "$LETSENCRYPT_DIR"
         chmod 600 "$LOGS_DIR/access.log"
 
-        BASE_DOMAIN=$(extract_domain "${DOMAIN}")
+        BASE_DOMAIN="${DOMAIN}"
     
     else
         BASE_DOMAIN="localhost"
