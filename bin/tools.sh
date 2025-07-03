@@ -22,10 +22,6 @@ tail_logs() {
     docker compose logs -f --no-color 2>&1 | sed "s/^/[$app] /"
 }
 
-extract_domain() {
-    echo "$1" | sed -E 's/.*\.([^.]+\.[^.]+\.[^.]+)$/\1/; t; s/.*\.([^.]+\.[^.]+)$/\1/'
-}
-
 add_key_in_env() {
     local KEY=$1
     local VALUE=$2
