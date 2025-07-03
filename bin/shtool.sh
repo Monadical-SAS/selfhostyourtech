@@ -44,15 +44,15 @@ function setup_letsencrypt #description 'Set up Lets Encrypt certificates for Tr
     else
         BASE_DOMAIN="localhost"
     fi
+
+    TRAEFIK_USER_AUTH=$(htpasswd -nb ${USERNAME} ${PASSWORD} | sed -e s/\\$/\\$\\$/g)
     
     # Create .env file with configuration
-    cat > "$TRAEFIK_DIR/.env" << EOF
-TRAEFIK_HOST=${DOMAIN}
-TRAEFIK_USER_AUTH=$(htpasswd -nb ${USERNAME} ${PASSWORD} | sed -e s/\\$/\\$\\$/g)
-DOMAIN=${DOMAIN}
-BASE_DOMAIN=${BASE_DOMAIN}
-EMAIL=${EMAIL}
-EOF
+    add_key_in_env "TRAEFIK_HOST" "${DOMAIN}" "$TRAEFIK_DIR/.env"
+    add_key_in_env "TRAEFIK_USER_AUTH" "${TRAEFIK_USER_AUTH}" "$TRAEFIK_DIR/.env"
+    add_key_in_env "DOMAIN" "${DOMAIN}" "$TRAEFIK_DIR/.env"
+    add_key_in_env "BASE_DOMAIN" "${BASE_DOMAIN}" "$TRAEFIK_DIR/.env"
+    add_key_in_env "EMAIL" "${EMAIL}" "$TRAEFIK_DIR/.env"
 
     cat > "$SELFHOSTYOURTECH_ROOT/etc/config.yaml" << EOF
 base_domain: ${BASE_DOMAIN}
