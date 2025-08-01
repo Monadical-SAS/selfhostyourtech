@@ -1,0 +1,63 @@
+services:
+  wordpress_database:
+    image: mariadb:10.11
+    container_name: wordpress-db
+    command: --max-allowed-packet=64MB
+    env_file:
+     - ./.env
+    environment:
+      - MYSQL_ROOT_PASSWORD=${WORDPRESS_MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${WORDPRESS_MYSQL_DATABASE}
+      - MYSQL_USER=${WORDPRESS_MYSQL_USER}
+      - MYSQL_PASSWORD=${WORDPRESS_MYSQL_PASSWORD}
+      - MARIADB_AUTO_UPGRADE=1
+      - MARIADB_DISABLE_UPGRADE_BACKUP=1
+    volumes:
+      - wordpress_database:/var/lib/mysql
+    networks:
+      - internal
+    restart: always
+
+  wordpress:
+    image: wordpress:latest
+    container_name: wordpress
+    env_file:
+     - ./.env
+    environment:
+      - WORDPRESS_DB_HOST=wordpress_database:3306
+      - WORDPRESS_DB_NAME=${WORDPRESS_MYSQL_DATABASE}
+      - WORDPRESS_DB_USER=${WORDPRESS_MYSQL_USER}
+      - WORDPRESS_DB_PASSWORD=${WORDPRESS_MYSQL_PASSWORD}
+      - WORDPRESS_TABLE_PREFIX=wp_
+      - WORDPRESS_DEBUG=1
+    volumes:
+      - wordpress_data:/var/www/html
+    networks:
+      - internal
+      - traefik-public
+    labels:
+      - traefik.enable=${ENABLE_TRAEFIK:-false}
+      - traefik.docker.network=traefik-public
+      - traefik.http.routers.wordpress.rule=Host(`wordpress.${BASE_DOMAIN}`)
+      - traefik.http.routers.wordpress.entrypoints=web
+      - "${HTTPS_MIDDLEWARE:+traefik.http.routers.wordpress.middlewares=${HTTPS_MIDDLEWARE}}"
+      - traefik.http.routers.wordpress-secure.rule=Host(`wordpress.${BASE_DOMAIN}`)
+      - traefik.http.routers.wordpress-secure.entrypoints=${HTTPS_ENTRYPOINT:-}
+      - traefik.http.routers.wordpress-secure.tls=${ENABLE_TLS:-}
+      - traefik.http.routers.wordpress-secure.tls.certresolver=${TLS_RESOLVER:-}
+      - traefik.http.services.wordpress.loadbalancer.server.port=80
+      - "${REDIRECT_SCHEME:+traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=${REDIRECT_SCHEME}}"
+      - "${REDIRECT_PERMANENT:+traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=${REDIRECT_PERMANENT}}"
+    restart: always
+    depends_on:
+      - wordpress_database
+
+volumes:
+  wordpress_database:
+  wordpress_data:
+
+networks:
+  internal:
+  traefik-public:
+    external: ${ENABLE_TRAEFIK:-false}
+    name: ${TRAEFIK_NETWORK:-traefik-public}

@@ -1,0 +1,33 @@
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    env_file:
+     - ./.env
+    volumes:
+      - portainer_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - traefik-public
+    labels:
+      - traefik.enable=${ENABLE_TRAEFIK:-false}
+      - traefik.docker.network=traefik-public
+      - traefik.http.routers.portainer.rule=Host(`portainer.${BASE_DOMAIN}`)
+      - traefik.http.routers.portainer.entrypoints=web
+      - "${HTTPS_MIDDLEWARE:+traefik.http.routers.portainer.middlewares=${HTTPS_MIDDLEWARE}}"
+      - traefik.http.routers.portainer-secure.rule=Host(`portainer.${BASE_DOMAIN}`)
+      - traefik.http.routers.portainer-secure.entrypoints=${HTTPS_ENTRYPOINT:-}
+      - traefik.http.routers.portainer-secure.tls=${ENABLE_TLS:-}
+      - traefik.http.routers.portainer-secure.tls.certresolver=${TLS_RESOLVER:-}
+      - traefik.http.services.portainer.loadbalancer.server.port=9000
+      - "${REDIRECT_SCHEME:+traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=${REDIRECT_SCHEME}}"
+      - "${REDIRECT_PERMANENT:+traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=${REDIRECT_PERMANENT}}"
+    restart: always
+
+volumes:
+  portainer_data:
+
+networks:
+  traefik-public:
+    external: ${ENABLE_TRAEFIK:-false}
+    name: ${TRAEFIK_NETWORK:-traefik-public}

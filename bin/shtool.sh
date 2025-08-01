@@ -242,7 +242,8 @@ function run #description 'Run the docker compose stack'
         set_shared_env "$app" "$ENVIRONMENT"
 
     done
-
+    configure_app_settings
+    update_homer_config
     configure_supervisor
 
     supervisorctl stop all || true

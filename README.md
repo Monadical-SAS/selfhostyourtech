@@ -283,10 +283,33 @@ https://authentik.<your_domain>/if/flow/initial-setup/
   - Description: Professional publishing platform
   - Type: CMS
 
+- **WordPress**
+  - Description: Popular content management system
+  - Type: CMS
+
+### Development
+- **Gitea**
+  - Description: Self-hosted Git service with web interface
+  - Type: Version Control
+
+### AI & Productivity
+- **LibreChat**
+  - Description: AI chat interface supporting multiple providers
+  - Type: AI Assistant
+
+### Analytics
+- **Matomo**
+  - Description: Privacy-focused web analytics platform
+  - Type: Analytics
+
 ### System
 - **Homer**
   - Description: Homepage dashboard
   - Type: System Dashboard
+
+- **Portainer**
+  - Description: Container management web interface
+  - Type: Container Management
 
 ## Coming Soon
 The following services are in development or planned for future releases:
@@ -451,3 +474,52 @@ For bug reports and feature requests, please use the GitHub repository at [https
 | `VIDEO_ZOOM_CLIENT_ID` | Zoom Client ID | *Optional* |
 | `VIDEO_ZOOM_CLIENT_SECRET` | Zoom Client Secret | *Optional* |
 | `SOCIAL_AUTH_OIDC_SECRET` | OIDC authentication secret | *Optional* |
+
+## Gitea
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `GITEA_POSTGRES_USER` | PostgreSQL username | `gitea` |
+| `GITEA_POSTGRES_DB` | PostgreSQL database name | `gitea` |
+| `GITEA_POSTGRES_PASSWORD` | PostgreSQL password | *Required* |
+
+## LibreChat
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `LIBRECHAT_PORT` | LibreChat application port | `3080` |
+| `UID` | User ID for container permissions | `1000` |
+| `GID` | Group ID for container permissions | `1000` |
+| `ALLOW_EMAIL_LOGIN` | Enable email login | `true` |
+| `ALLOW_REGISTRATION` | Enable user registration | `true` |
+| `JWT_SECRET` | JWT token secret key | *Required* |
+| `JWT_REFRESH_SECRET` | JWT refresh token secret | *Required* |
+| `CREDS_KEY` | Credentials encryption key | *Required* |
+| `CREDS_IV` | Credentials initialization vector | *Required* |
+| `MEILI_MASTER_KEY` | Meilisearch master key | *Required* |
+| `SESSION_EXPIRY` | Session expiration time (ms) | `900000` |
+| `REFRESH_TOKEN_EXPIRY` | Refresh token expiration (ms) | `604800000` |
+
+## Matomo
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `MATOMO_MYSQL_ROOT_PASSWORD` | MariaDB root password | *Required* |
+| `MATOMO_MYSQL_USER` | MariaDB username | `matomo` |
+| `MATOMO_MYSQL_PASSWORD` | MariaDB user password | *Required* |
+| `MATOMO_MYSQL_DATABASE` | MariaDB database name | `matomo` |
+
+## WordPress
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `WORDPRESS_MYSQL_ROOT_PASSWORD` | MariaDB root password | *Required* |
+| `WORDPRESS_MYSQL_USER` | MariaDB username | `wordpress` |
+| `WORDPRESS_MYSQL_PASSWORD` | MariaDB user password | *Required* |
+| `WORDPRESS_MYSQL_DATABASE` | MariaDB database name | `wordpress` |
+
+## Portainer
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| *No additional variables* | Uses Docker socket and data volume | - |

@@ -1,0 +1,113 @@
+services:
+  librechat:
+    container_name: LibreChat
+    image: ghcr.io/danny-avila/librechat-dev:latest
+    env_file:
+     - ./.env
+    environment:
+      - HOST=0.0.0.0
+      - PORT=${LIBRECHAT_PORT:-3080}
+      - MONGO_URI=mongodb://librechat_mongodb:27017/LibreChat
+      - MEILI_HOST=http://librechat_meilisearch:7700
+      - DOMAIN_CLIENT=https://librechat.${BASE_DOMAIN}
+      - DOMAIN_SERVER=https://librechat.${BASE_DOMAIN}
+      # Authentication settings
+      - ALLOW_EMAIL_LOGIN=${ALLOW_EMAIL_LOGIN:-true}
+      - ALLOW_REGISTRATION=${ALLOW_REGISTRATION:-true}
+      - ALLOW_SOCIAL_LOGIN=${ALLOW_SOCIAL_LOGIN:-false}
+      - ALLOW_SOCIAL_REGISTRATION=${ALLOW_SOCIAL_REGISTRATION:-false}
+      # JWT Configuration
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - CREDS_KEY=${CREDS_KEY}
+      - CREDS_IV=${CREDS_IV}
+      # Session Configuration
+      - SESSION_EXPIRY=${SESSION_EXPIRY}
+      - REFRESH_TOKEN_EXPIRY=${REFRESH_TOKEN_EXPIRY}
+      # Disable RAG by default to avoid OpenAI API key requirement
+      - RAG_ENABLED=false
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - type: bind
+        source: ./.env
+        target: /app/.env
+      - ./librechat/images:/app/client/public/images
+      - ./librechat/uploads:/app/uploads
+      - ./librechat/logs:/app/api/logs
+    user: "${UID:-1000}:${GID:-1000}"
+    networks:
+      - internal
+      - traefik-public
+    labels:
+      - traefik.enable=${ENABLE_TRAEFIK:-false}
+      - traefik.docker.network=traefik-public
+      - traefik.http.routers.librechat.rule=Host(`librechat.${BASE_DOMAIN}`)
+      - traefik.http.routers.librechat.entrypoints=web
+      - "${HTTPS_MIDDLEWARE:+traefik.http.routers.librechat.middlewares=${HTTPS_MIDDLEWARE}}"
+      - traefik.http.routers.librechat-secure.rule=Host(`librechat.${BASE_DOMAIN}`)
+      - traefik.http.routers.librechat-secure.entrypoints=${HTTPS_ENTRYPOINT:-}
+      - traefik.http.routers.librechat-secure.tls=${ENABLE_TLS:-}
+      - traefik.http.routers.librechat-secure.tls.certresolver=${TLS_RESOLVER:-}
+      - traefik.http.services.librechat.loadbalancer.server.port=${LIBRECHAT_PORT:-3080}
+      - "${REDIRECT_SCHEME:+traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=${REDIRECT_SCHEME}}"
+      - "${REDIRECT_PERMANENT:+traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=${REDIRECT_PERMANENT}}"
+    restart: always
+    depends_on:
+      - librechat_mongodb
+      - librechat_meilisearch
+
+  librechat_mongodb:
+    container_name: librechat-mongodb
+    image: mongo
+    env_file:
+     - ./.env
+    volumes:
+      - librechat_mongodb:/data/db
+    command: mongod --noauth
+    networks:
+      - internal
+    restart: always
+
+  librechat_meilisearch:
+    container_name: librechat-meilisearch
+    image: getmeili/meilisearch:v1.0
+    env_file:
+     - ./.env
+    environment:
+      - MEILI_HOST=http://meilisearch:7700
+      - MEILI_HTTP_ADDR=0.0.0.0:7700
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+    volumes:
+      - librechat_meilisearch:/meili_data
+    networks:
+      - internal
+    restart: always
+
+  # RAG API service - Optional, only needed if you want RAG functionality
+  # Uncomment and configure if you have OpenAI API key and want to use RAG
+  # librechat_rag_api:
+  #   container_name: librechat-rag-api
+  #   image: ghcr.io/danny-avila/librechat-rag-api-dev:latest
+  #   env_file:
+  #    - ./.env
+  #   environment:
+  #     - PORT=${RAG_PORT:-8000}
+  #     - RAG_UPLOAD_DIR=/app/uploads
+  #     - OPENAI_API_KEY=${OPENAI_API_KEY}
+  #   volumes:
+  #     - ./librechat/uploads:/app/uploads
+  #     - ./librechat/vector_db:/app/vector_db
+  #   networks:
+  #     - internal
+  #   restart: always
+
+volumes:
+  librechat_mongodb:
+  librechat_meilisearch:
+
+networks:
+  internal:
+  traefik-public:
+    external: ${ENABLE_TRAEFIK:-false}
+    name: ${TRAEFIK_NETWORK:-traefik-public}

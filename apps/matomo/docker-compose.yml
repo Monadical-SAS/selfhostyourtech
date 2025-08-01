@@ -1,0 +1,75 @@
+services:
+  matomo_database:
+    image: mariadb:10.11
+    command: --max-allowed-packet=64MB
+    env_file:
+     - ./.env
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MATOMO_MYSQL_ROOT_PASSWORD}
+      - MYSQL_PASSWORD=${MATOMO_MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MATOMO_MYSQL_DATABASE}
+      - MYSQL_USER=${MATOMO_MYSQL_USER}
+      - MARIADB_AUTO_UPGRADE=1
+      - MARIADB_DISABLE_UPGRADE_BACKUP=1
+    volumes:
+      - matomo_database:/var/lib/mysql:Z
+    networks:
+      - internal
+    restart: always
+
+  matomo:
+    image: matomo:fpm-alpine
+    env_file:
+     - ./.env
+    environment:
+      - MATOMO_DATABASE_HOST=matomo_database
+      - MATOMO_DATABASE_ADAPTER=mysql
+      - MATOMO_DATABASE_TABLES_PREFIX=matomo_
+      - MATOMO_DATABASE_USERNAME=${MATOMO_MYSQL_USER}
+      - MATOMO_DATABASE_PASSWORD=${MATOMO_MYSQL_PASSWORD}
+      - MATOMO_DATABASE_DBNAME=${MATOMO_MYSQL_DATABASE}
+      - PHP_MEMORY_LIMIT=2048M
+    volumes:
+      - matomo_data:/var/www/html:z
+    networks:
+      - internal
+    restart: always
+    depends_on:
+      - matomo_database
+
+  matomo_web:
+    image: nginx:alpine
+    env_file:
+     - ./.env
+    volumes:
+      - matomo_data:/var/www/html:z,ro
+      - ./etc/matomo.conf:/etc/nginx/conf.d/default.conf:z,ro
+    networks:
+      - internal
+      - traefik-public
+    labels:
+      - traefik.enable=${ENABLE_TRAEFIK:-false}
+      - traefik.docker.network=traefik-public
+      - traefik.http.routers.matomo.rule=Host(`matomo.${BASE_DOMAIN}`)
+      - traefik.http.routers.matomo.entrypoints=web
+      - "${HTTPS_MIDDLEWARE:+traefik.http.routers.matomo.middlewares=${HTTPS_MIDDLEWARE}}"
+      - traefik.http.routers.matomo-secure.rule=Host(`matomo.${BASE_DOMAIN}`)
+      - traefik.http.routers.matomo-secure.entrypoints=${HTTPS_ENTRYPOINT:-}
+      - traefik.http.routers.matomo-secure.tls=${ENABLE_TLS:-}
+      - traefik.http.routers.matomo-secure.tls.certresolver=${TLS_RESOLVER:-}
+      - traefik.http.services.matomo.loadbalancer.server.port=80
+      - "${REDIRECT_SCHEME:+traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=${REDIRECT_SCHEME}}"
+      - "${REDIRECT_PERMANENT:+traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=${REDIRECT_PERMANENT}}"
+    restart: always
+    depends_on:
+      - matomo
+
+volumes:
+  matomo_database:
+  matomo_data:
+
+networks:
+  internal:
+  traefik-public:
+    external: ${ENABLE_TRAEFIK:-false}
+    name: ${TRAEFIK_NETWORK:-traefik-public}
