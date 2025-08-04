@@ -73,7 +73,7 @@ services:
     category: "DevOps"
     name: "Gitea"
     logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/gitea.png"
-    subtitle: "Git server"
+    subtitle: "Self-hosted Git service"
     type: null
 
   ghost:
@@ -87,7 +87,7 @@ services:
     category: "Publishing"
     name: "WordPress"
     logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/wordpress.png"
-    subtitle: "Website & blog platform"
+    subtitle: "Popular content management system"
     type: null
 
   librechat:
@@ -95,6 +95,13 @@ services:
     name: "LibreChat"
     logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/librechat.png"
     subtitle: "AI chat interface"
+    type: null
+
+  matomo:
+    category: "Analytics"
+    name: "Matomo"
+    logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/matomo.png"
+    subtitle: "Privacy-focused web analytics"
     type: null
 
   helix:
@@ -114,10 +121,10 @@ services:
   homer:
     category: "System"
     name: "Homer"
-    alias: "dashboard"
     logo: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/homer.png"
     subtitle: "Homepage dashboard"
     type: null
+    alias: "dashboard"
 
 categories:
   Communication:
@@ -134,5 +141,7 @@ categories:
     icon: "fas fa-globe"
   "AI & Tools":
     icon: "fas fa-robot"
+  Analytics:
+    icon: "fas fa-chart-line"
   System:
     icon: "fas fa-server"

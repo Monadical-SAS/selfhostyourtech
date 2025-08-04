@@ -44,6 +44,7 @@ next-env.d.ts
 
 apps/homer/etc/config.yaml
 apps/homer/config/config.yml
+apps/librechat/librechat/*
 etc/basedomain.txt
 etc/default_admin_email.txt
 etc/environment.txt
