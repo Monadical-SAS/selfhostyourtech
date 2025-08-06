@@ -14,12 +14,12 @@ services:
       database__connection__password: "${MYSQL_PASSWORD}"
       database__connection__database: "${MYSQL_DATABASE}"
       # this url value is just an example, and is likely wrong for your environment!
-      url: "${HTTP_SCHEME}://ghost.${BASE_DOMAIN}"  # Update to use HTTPS
+      url: "${HTTP_SCHEME}://${CUSTOM_SUBDOMAIN:-ghost}.${BASE_DOMAIN}"  # Update to use HTTPS
       # contrary to the default mentioned in the linked documentation, this image defaults to NODE_ENV=production (so development mode needs to be explicitly specified if desired)
       NODE_ENV: production
       privacy__useUpdateCheck: false
       # This tells Ghost to trust the X-Forwarded-Proto header from Traefik
-      url_base: "${HTTP_SCHEME}://ghost.${BASE_DOMAIN}"
+      url_base: "${HTTP_SCHEME}://${CUSTOM_SUBDOMAIN:-ghost}.${BASE_DOMAIN}"
       server__host: "0.0.0.0"
       server__port: 2368
       trust_proxy: true
@@ -29,10 +29,10 @@ services:
       - traefik.enable=${ENABLE_TRAEFIK:-false}
       - traefik.docker.network=traefik-public
       - traefik.http.services.ghost-service.loadbalancer.server.port=2368
-      - traefik.http.routers.ghost.rule=Host(`ghost.${BASE_DOMAIN}`)
+      - traefik.http.routers.ghost.rule=Host(`${CUSTOM_SUBDOMAIN:-ghost}.${BASE_DOMAIN}`)
       - traefik.http.routers.ghost.entrypoints=web
       - "${HTTPS_MIDDLEWARE:+traefik.http.routers.ghost.middlewares=${HTTPS_MIDDLEWARE}}"
-      - traefik.http.routers.ghost-secure.rule=Host(`ghost.${BASE_DOMAIN}`)
+      - traefik.http.routers.ghost-secure.rule=Host(`${CUSTOM_SUBDOMAIN:-ghost}.${BASE_DOMAIN}`)
       - traefik.http.routers.ghost-secure.entrypoints=${HTTPS_ENTRYPOINT:-}
       - traefik.http.routers.ghost-secure.tls=${ENABLE_TLS:-}"
       - traefik.http.routers.ghost-secure.tls.certresolver=${TLS_RESOLVER:-}

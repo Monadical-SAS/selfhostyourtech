@@ -50,10 +50,10 @@ services:
     labels:
       - traefik.enable=${ENABLE_TRAEFIK:-false}
       - traefik.docker.network=traefik-public
-      - traefik.http.routers.matomo.rule=Host(`matomo.${BASE_DOMAIN}`)
+      - traefik.http.routers.matomo.rule=Host(`${CUSTOM_SUBDOMAIN:-matomo}.${BASE_DOMAIN}`)
       - traefik.http.routers.matomo.entrypoints=web
       - "${HTTPS_MIDDLEWARE:+traefik.http.routers.matomo.middlewares=${HTTPS_MIDDLEWARE}}"
-      - traefik.http.routers.matomo-secure.rule=Host(`matomo.${BASE_DOMAIN}`)
+      - traefik.http.routers.matomo-secure.rule=Host(`${CUSTOM_SUBDOMAIN:-matomo}.${BASE_DOMAIN}`)
       - traefik.http.routers.matomo-secure.entrypoints=${HTTPS_ENTRYPOINT:-}
       - traefik.http.routers.matomo-secure.tls=${ENABLE_TLS:-}
       - traefik.http.routers.matomo-secure.tls.certresolver=${TLS_RESOLVER:-}

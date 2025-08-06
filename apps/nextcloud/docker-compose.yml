@@ -11,8 +11,8 @@ services:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - REDIS_HOST=redis
-      - APACHE_SERVER_NAME=nextcloud.${BASE_DOMAIN}
-      - NEXTCLOUD_TRUSTED_DOMAINS=nextcloud.${BASE_DOMAIN}
+      - APACHE_SERVER_NAME=${CUSTOM_SUBDOMAIN:-nextcloud}.${BASE_DOMAIN}
+      - NEXTCLOUD_TRUSTED_DOMAINS=${CUSTOM_SUBDOMAIN:-nextcloud}.${BASE_DOMAIN}
       - TRUSTED_PROXIES=${TRUSTED_PROXIES}
     depends_on:
       - db
@@ -23,10 +23,10 @@ services:
     labels:
       - traefik.enable=${ENABLE_TRAEFIK:-false}
       - traefik.docker.network=traefik-public
-      - traefik.http.routers.nextcloud.rule=Host(`nextcloud.${BASE_DOMAIN}`)
+      - traefik.http.routers.nextcloud.rule=Host(`${CUSTOM_SUBDOMAIN:-nextcloud}.${BASE_DOMAIN}`)
       - traefik.http.routers.nextcloud.entrypoints=web
       - "${HTTPS_MIDDLEWARE:+traefik.http.routers.nextcloud.middlewares=${HTTPS_MIDDLEWARE}}"
-      - traefik.http.routers.nextcloud-secure.rule=Host(`nextcloud.${BASE_DOMAIN}`)
+      - traefik.http.routers.nextcloud-secure.rule=Host(`${CUSTOM_SUBDOMAIN:-nextcloud}.${BASE_DOMAIN}`)
       - traefik.http.routers.nextcloud-secure.entrypoints=${HTTPS_ENTRYPOINT:-}
       - traefik.http.routers.nextcloud-secure.tls=${ENABLE_TLS:-}"
       - traefik.http.routers.nextcloud-secure.tls.certresolver=${TLS_RESOLVER:-}

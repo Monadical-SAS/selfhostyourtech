@@ -9,8 +9,8 @@ services:
       - PORT=${LIBRECHAT_PORT:-3080}
       - MONGO_URI=mongodb://librechat_mongodb:27017/LibreChat
       - MEILI_HOST=http://librechat_meilisearch:7700
-      - DOMAIN_CLIENT=https://librechat.${BASE_DOMAIN}
-      - DOMAIN_SERVER=https://librechat.${BASE_DOMAIN}
+      - DOMAIN_CLIENT=https://${CUSTOM_SUBDOMAIN:-librechat}.${BASE_DOMAIN}
+      - DOMAIN_SERVER=https://${CUSTOM_SUBDOMAIN:-librechat}.${BASE_DOMAIN}
       # Authentication settings
       - ALLOW_EMAIL_LOGIN=${ALLOW_EMAIL_LOGIN:-true}
       - ALLOW_REGISTRATION=${ALLOW_REGISTRATION:-true}
@@ -42,10 +42,10 @@ services:
     labels:
       - traefik.enable=${ENABLE_TRAEFIK:-false}
       - traefik.docker.network=traefik-public
-      - traefik.http.routers.librechat.rule=Host(`librechat.${BASE_DOMAIN}`)
+      - traefik.http.routers.librechat.rule=Host(`${CUSTOM_SUBDOMAIN:-librechat}.${BASE_DOMAIN}`)
       - traefik.http.routers.librechat.entrypoints=web
       - "${HTTPS_MIDDLEWARE:+traefik.http.routers.librechat.middlewares=${HTTPS_MIDDLEWARE}}"
-      - traefik.http.routers.librechat-secure.rule=Host(`librechat.${BASE_DOMAIN}`)
+      - traefik.http.routers.librechat-secure.rule=Host(`${CUSTOM_SUBDOMAIN:-librechat}.${BASE_DOMAIN}`)
       - traefik.http.routers.librechat-secure.entrypoints=${HTTPS_ENTRYPOINT:-}
       - traefik.http.routers.librechat-secure.tls=${ENABLE_TLS:-}
       - traefik.http.routers.librechat-secure.tls.certresolver=${TLS_RESOLVER:-}

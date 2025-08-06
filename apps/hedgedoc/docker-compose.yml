@@ -18,7 +18,7 @@ services:
      - ./.env
     environment:
       - CMD_DB_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@hedgedoc_database:5432/${POSTGRES_DB}
-      - CMD_DOMAIN=hedgedoc.${BASE_DOMAIN}
+      - CMD_DOMAIN=${CUSTOM_SUBDOMAIN:-hedgedoc}.${BASE_DOMAIN}
       - CMD_PROTOCOL_USESSL=true
       - CMD_URL_ADDPORT=false
       - CMD_SESSION_SECRET=${HD_SESSION_SECRET}
@@ -32,10 +32,10 @@ services:
     labels:
       - traefik.enable=${ENABLE_TRAEFIK:-false}
       - traefik.docker.network=traefik-public
-      - traefik.http.routers.hedgedoc.rule=Host(`hedgedoc.${BASE_DOMAIN}`)
+      - traefik.http.routers.hedgedoc.rule=Host(`${CUSTOM_SUBDOMAIN:-hedgedoc}.${BASE_DOMAIN}`)
       - traefik.http.routers.hedgedoc.entrypoints=web
       - "${HTTPS_MIDDLEWARE:+traefik.http.routers.hedgedoc.middlewares=${HTTPS_MIDDLEWARE}}"
-      - traefik.http.routers.hedgedoc-secure.rule=Host(`hedgedoc.${BASE_DOMAIN}`)
+      - traefik.http.routers.hedgedoc-secure.rule=Host(`${CUSTOM_SUBDOMAIN:-hedgedoc}.${BASE_DOMAIN}`)
       - traefik.http.routers.hedgedoc-secure.entrypoints=${HTTPS_ENTRYPOINT:-}
       - traefik.http.routers.hedgedoc-secure.tls=${ENABLE_TLS:-}"
       - traefik.http.routers.hedgedoc-secure.tls.certresolver=${TLS_RESOLVER:-}

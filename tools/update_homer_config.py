@@ -33,6 +33,29 @@ def load_txt(file_path):
        return None
 
 
+def get_custom_subdomain_from_env(app_name):
+   """Read CUSTOM_SUBDOMAIN from app's .env file if it exists"""
+   env_file_path = f"{SELFHOSTYOURTECH_ROOT}/apps/{app_name}/.env"
+   
+   if not os.path.exists(env_file_path):
+       return None
+   
+   try:
+       with open(env_file_path, 'r') as file:
+           for line in file:
+               line = line.strip()
+               if line.startswith('CUSTOM_SUBDOMAIN='):
+                   # Extract value after the equals sign
+                   value = line.split('=', 1)[1]
+                   # Remove quotes if present
+                   value = value.strip('"\'')
+                   return value if value else None
+   except Exception as e:
+       print(f"Error reading .env file for {app_name}: {e}")
+   
+   return None
+
+
 def generate_homer_config():
    """Generate Homer configuration based on enabled apps"""
    # Load configurations
@@ -115,6 +138,11 @@ def generate_homer_config():
            alias = app_info.get("alias", "")
            if alias != "":
                subdomain = alias
+           
+           # Check for CUSTOM_SUBDOMAIN in app's .env file
+           custom_subdomain = get_custom_subdomain_from_env(app_name)
+           if custom_subdomain:
+               subdomain = custom_subdomain
                
            # Create app entry
            app_entry = {

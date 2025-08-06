@@ -28,10 +28,10 @@ services:
     labels:
       - traefik.enable=${ENABLE_TRAEFIK:-false}
       - traefik.docker.network=traefik-public
-      - traefik.http.routers.onlyoffice.rule=Host(`onlyoffice.${BASE_DOMAIN}`)
+      - traefik.http.routers.onlyoffice.rule=Host(`${CUSTOM_SUBDOMAIN:-onlyoffice}.${BASE_DOMAIN}`)
       - traefik.http.routers.onlyoffice.entrypoints=web
       - "${HTTPS_MIDDLEWARE:+traefik.http.routers.onlyoffice.middlewares=${HTTPS_MIDDLEWARE}}"
-      - traefik.http.routers.onlyoffice-secure.rule=Host(`onlyoffice.${BASE_DOMAIN}`)
+      - traefik.http.routers.onlyoffice-secure.rule=Host(`${CUSTOM_SUBDOMAIN:-onlyoffice}.${BASE_DOMAIN}`)
       - traefik.http.routers.onlyoffice-secure.entrypoints=${HTTPS_ENTRYPOINT:-}
       - traefik.http.routers.onlyoffice-secure.tls=${ENABLE_TLS:-}"
       - traefik.http.routers.onlyoffice-secure.tls.certresolver=${TLS_RESOLVER:-}

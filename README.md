@@ -240,6 +240,18 @@ Use this url to access the admin settings.
 
 https://authentik.<your_domain>/if/flow/initial-setup/
 
+## CUSTOM_SUBDOMAIN Configuration Guide
+
+The `CUSTOM_SUBDOMAIN` environment variable provides a way to override the default subdomain behavior in your application. When configured, it allows you to specify a custom subdomain that will be used instead of the application's default subdomain logic.
+
+### Configuration
+
+Add the following to your application's `.env` file:
+
+```env
+CUSTOM_SUBDOMAIN=your_custom_subdomain
+```
+
 ## Available Services
 
 ### Communication

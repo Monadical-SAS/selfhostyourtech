@@ -12,10 +12,10 @@ services:
     labels:
       - traefik.enable=${ENABLE_TRAEFIK:-false}
       - traefik.docker.network=traefik-public
-      - traefik.http.routers.portainer.rule=Host(`portainer.${BASE_DOMAIN}`)
+      - traefik.http.routers.portainer.rule=Host(`${CUSTOM_SUBDOMAIN:-portainer}.${BASE_DOMAIN}`)
       - traefik.http.routers.portainer.entrypoints=web
       - "${HTTPS_MIDDLEWARE:+traefik.http.routers.portainer.middlewares=${HTTPS_MIDDLEWARE}}"
-      - traefik.http.routers.portainer-secure.rule=Host(`portainer.${BASE_DOMAIN}`)
+      - traefik.http.routers.portainer-secure.rule=Host(`${CUSTOM_SUBDOMAIN:-portainer}.${BASE_DOMAIN}`)
       - traefik.http.routers.portainer-secure.entrypoints=${HTTPS_ENTRYPOINT:-}
       - traefik.http.routers.portainer-secure.tls=${ENABLE_TLS:-}
       - traefik.http.routers.portainer-secure.tls.certresolver=${TLS_RESOLVER:-}

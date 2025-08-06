@@ -26,9 +26,9 @@ services:
       - GITEA__database__NAME=${GITEA_POSTGRES_DB}
       - GITEA__database__USER=${GITEA_POSTGRES_USER}
       - GITEA__database__PASSWD=${GITEA_POSTGRES_PASSWORD}
-      - GITEA__server__DOMAIN=gitea.${BASE_DOMAIN}
-      - GITEA__server__SSH_DOMAIN=gitea.${BASE_DOMAIN}
-      - GITEA__server__ROOT_URL=https://gitea.${BASE_DOMAIN}
+      - GITEA__server__DOMAIN=${CUSTOM_SUBDOMAIN:-gitea}.${BASE_DOMAIN}
+      - GITEA__server__SSH_DOMAIN=${CUSTOM_SUBDOMAIN:-gitea}.${BASE_DOMAIN}
+      - GITEA__server__ROOT_URL=https://${CUSTOM_SUBDOMAIN:-gitea}.${BASE_DOMAIN}
       - GITEA__server__PROTOCOL=http
       - GITEA__server__HTTP_PORT=3000
     volumes:
@@ -41,10 +41,10 @@ services:
     labels:
       - traefik.enable=${ENABLE_TRAEFIK:-false}
       - traefik.docker.network=traefik-public
-      - traefik.http.routers.gitea.rule=Host(`gitea.${BASE_DOMAIN}`)
+      - traefik.http.routers.gitea.rule=Host(`${CUSTOM_SUBDOMAIN:-gitea}.${BASE_DOMAIN}`)
       - traefik.http.routers.gitea.entrypoints=web
       - "${HTTPS_MIDDLEWARE:+traefik.http.routers.gitea.middlewares=${HTTPS_MIDDLEWARE}}"
-      - traefik.http.routers.gitea-secure.rule=Host(`gitea.${BASE_DOMAIN}`)
+      - traefik.http.routers.gitea-secure.rule=Host(`${CUSTOM_SUBDOMAIN:-gitea}.${BASE_DOMAIN}`)
       - traefik.http.routers.gitea-secure.entrypoints=${HTTPS_ENTRYPOINT:-}
       - traefik.http.routers.gitea-secure.tls=${ENABLE_TLS:-}
       - traefik.http.routers.gitea-secure.tls.certresolver=${TLS_RESOLVER:-}
