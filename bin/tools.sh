@@ -35,6 +35,7 @@ add_key_in_env() {
         echo "${KEY}=${VALUE}" >> "$ENV_FILE"
         echo "Added $KEY to $ENV_FILE"
     fi
+    chmod a+w "$ENV_FILE"
 }
 
 delete_key_in_env() {
@@ -79,6 +80,7 @@ update_env_record() {
         echo "${key}=${value}" >> "$env_file"
         echo "Added new key '$key' with value '$value' to $env_file"
     fi
+    chmod a+w "$env_file"
     
     return 0
 }
@@ -113,6 +115,7 @@ run_app_hook() {
         echo "Script app_hook.sh does not exist in directory: $directory_path"
         touch "${directory_path}/.env"
     fi
+    chmod a+w "${directory_path}/.env"
 }
 
 generate_supervisor_config() {

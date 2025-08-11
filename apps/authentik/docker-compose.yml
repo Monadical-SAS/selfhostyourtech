@@ -57,11 +57,11 @@ services:
       # Define the service explicitly
       - traefik.http.services.authentik.loadbalancer.server.port=9000
       # HTTP router
-      - traefik.http.routers.authentik.rule=Host(`authentik.${BASE_DOMAIN}`)
+      - traefik.http.routers.authentik.rule=Host(`${CUSTOM_SUBDOMAIN:-authentik}.${BASE_DOMAIN}`)
       - traefik.http.routers.authentik.entrypoints=web
       - "${HTTPS_MIDDLEWARE:+traefik.http.routers.authentik.middlewares=${HTTPS_MIDDLEWARE}}"
       # HTTPS router
-      - traefik.http.routers.authentik-secure.rule=Host(`authentik.${BASE_DOMAIN}`)
+      - traefik.http.routers.authentik-secure.rule=Host(`${CUSTOM_SUBDOMAIN:-authentik}.${BASE_DOMAIN}`)
       - traefik.http.routers.authentik-secure.entrypoints=${HTTPS_ENTRYPOINT:-}
       - traefik.http.routers.authentik-secure.tls=${ENABLE_TLS:-}"
       - traefik.http.routers.authentik-secure.tls.certresolver=${TLS_RESOLVER:-}

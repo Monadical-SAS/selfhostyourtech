@@ -38,10 +38,10 @@ services:
     labels:
       - traefik.enable=${ENABLE_TRAEFIK:-false}
       - traefik.docker.network=traefik-public
-      - traefik.http.routers.wordpress.rule=Host(`wordpress.${BASE_DOMAIN}`)
+      - traefik.http.routers.wordpress.rule=Host(`${CUSTOM_SUBDOMAIN:-wordpress}.${BASE_DOMAIN}`)
       - traefik.http.routers.wordpress.entrypoints=web
       - "${HTTPS_MIDDLEWARE:+traefik.http.routers.wordpress.middlewares=${HTTPS_MIDDLEWARE}}"
-      - traefik.http.routers.wordpress-secure.rule=Host(`wordpress.${BASE_DOMAIN}`)
+      - traefik.http.routers.wordpress-secure.rule=Host(`${CUSTOM_SUBDOMAIN:-wordpress}.${BASE_DOMAIN}`)
       - traefik.http.routers.wordpress-secure.entrypoints=${HTTPS_ENTRYPOINT:-}
       - traefik.http.routers.wordpress-secure.tls=${ENABLE_TLS:-}
       - traefik.http.routers.wordpress-secure.tls.certresolver=${TLS_RESOLVER:-}

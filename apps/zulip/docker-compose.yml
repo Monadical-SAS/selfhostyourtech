@@ -143,10 +143,10 @@ services:
     labels:
       - traefik.enable=${ENABLE_TRAEFIK:-false}
       - traefik.docker.network=traefik-public
-      - traefik.http.routers.zulip.rule=Host(`zulip.${BASE_DOMAIN}`)
+      - traefik.http.routers.zulip.rule=Host(`${CUSTOM_SUBDOMAIN:-zulip}.${BASE_DOMAIN}`)
       - traefik.http.routers.zulip.entrypoints=web
       - "${HTTPS_MIDDLEWARE:+traefik.http.routers.zulip.middlewares=${HTTPS_MIDDLEWARE}}"
-      - traefik.http.routers.zulip-secure.rule=Host(`zulip.${BASE_DOMAIN}`)
+      - traefik.http.routers.zulip-secure.rule=Host(`${CUSTOM_SUBDOMAIN:-zulip}.${BASE_DOMAIN}`)
       - traefik.http.routers.zulip-secure.entrypoints=websecure
       - traefik.http.routers.zulip-secure.tls=true
       - "${TLS_RESOLVER:+traefik.http.routers.zulip-secure.tls.certresolver=${TLS_RESOLVER}}"

@@ -25,7 +25,7 @@ services:
       - SERVICE_FQDN_SERVER_3000
       - NODE_PORT=3000
       - PG_DATABASE_URL=postgres://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:-postgres}@${PG_DATABASE_HOST:-db}:${PG_DATABASE_PORT:-5432}/default
-      - SERVER_URL=${HTTP_SCHEME}://twenty.${BASE_DOMAIN}
+      - SERVER_URL=${HTTP_SCHEME}://${CUSTOM_SUBDOMAIN:-twenty}.${BASE_DOMAIN}
       - REDIS_URL=${REDIS_URL:-redis://redis:6379}
       - STORAGE_TYPE=${STORAGE_TYPE}
       - STORAGE_S3_REGION=${STORAGE_S3_REGION}
@@ -58,11 +58,11 @@ services:
     labels:
       - traefik.enable=${ENABLE_TRAEFIK:-false}
       - traefik.docker.network=traefik-public
-      - traefik.http.routers.twenty.rule=Host(`twenty.${BASE_DOMAIN}`)
+      - traefik.http.routers.twenty.rule=Host(`${CUSTOM_SUBDOMAIN:-twenty}.${BASE_DOMAIN}`)
       - traefik.http.routers.twenty.entrypoints=web
       - traefik.http.services.twenty.loadbalancer.server.port=3000
       - "${HTTPS_MIDDLEWARE:+traefik.http.routers.twenty.middlewares=${HTTPS_MIDDLEWARE}}"
-      - traefik.http.routers.twenty-secure.rule=Host(`twenty.${BASE_DOMAIN}`)
+      - traefik.http.routers.twenty-secure.rule=Host(`${CUSTOM_SUBDOMAIN:-twenty}.${BASE_DOMAIN}`)
       - traefik.http.routers.twenty-secure.entrypoints=${HTTPS_ENTRYPOINT:-}
       - traefik.http.routers.twenty-secure.tls=${ENABLE_TLS:-}"
       - traefik.http.routers.twenty-secure.tls.certresolver=${TLS_RESOLVER:-}
@@ -124,7 +124,7 @@ services:
     command: [ "yarn", "worker:prod" ]
     environment:
       PG_DATABASE_URL: postgres://${PG_DATABASE_USER:-postgres}:${PG_DATABASE_PASSWORD:-postgres}@${PG_DATABASE_HOST:-db}:${PG_DATABASE_PORT:-5432}/default
-      SERVER_URL: https://twenty.${BASE_DOMAIN}
+      SERVER_URL: https://${CUSTOM_SUBDOMAIN:-twenty}.${BASE_DOMAIN}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       DISABLE_DB_MIGRATIONS: "true" # it already runs on the server
 
