@@ -7,5 +7,4 @@ apps:
   - zulip
   - twenty
   - nextcloud
-  - docs
   - ghost
